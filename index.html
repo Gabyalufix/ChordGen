@@ -23,10 +23,14 @@
 Instrument:
 <select id="INSTRUMENT_SELECT">
   <option value="MANDOLIN">       Mandolin</option>
+  <option value="UKELELE">       Ukelele</option>
+  <option value="GUITAR">       Guitar</option>
+
 </select>
 <br>
 
-<input type="radio" name="chordSelectMode" value="RootType">
+<div style="display:none">
+<input type="radio" name="chordSelectMode" value="RootType" style="display:none">
 Select Root: 
 <select id="SELECT_ROOT">
   <option value="1">       C</option>
@@ -51,11 +55,12 @@ Select Root:
   <option value="6">       6th</option>
   <option value="6">       dim</option>
 </select>
+</div>
 
 <BR>
 
-<input type="radio" name="chordSelectMode" value="ScaleDegree" checked="checked">
-Or select scale:
+<input type="radio" name="chordSelectMode" value="ScaleDegree" checked="checked" style="display:none">
+<span>Select scale:</span>
 <select id="SELECT_SCALEKEY">
   <option value="1">       C</option>
   <option value="2">       C#/Db</option>
@@ -75,8 +80,8 @@ Or select scale:
   <option value="Minor">       Minor</option>
 </select>
 
-and Degree:
-<select id="SELECT_CHORDDEGREE">
+<span style="display:none">and Degree:</span>
+<select id="SELECT_CHORDDEGREE" style="display:none">
   <option value="1">       I</option>
   <option value="2">       ii</option>
   <option value="3">       iii</option>
@@ -85,6 +90,10 @@ and Degree:
   <option value="6">       vi</option>
   <option value="7">       vii</option>
 </select>
+
+<div id="CHORD_PANEL">
+
+</div>
 
 </div>
 
