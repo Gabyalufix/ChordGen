@@ -1,0 +1,221 @@
+
+
+:root {
+  --white: #ffffff;
+  --black: #000000;
+  --LT4: #f0f1f5;
+  --LT3: #e1e4ea;
+  --LT2: #c3c8d5;
+  --LT1: #a5adc0;
+  --MID: #7883a1;
+  --DK1: #5e6a87;	
+  --DK2: #485167;
+  --DK3: #343b4b;
+  --DK4: #1f232d;
+  --baseBG: #c3c8d5;
+  --consoleGreen: #33FF00;
+  --errorRed: #ce0000;
+  --bsodBlue: #0000ce;
+  --bsodText: #ffffff;
+  --consoleBlack: #111111;
+  --greenLT: #a4ba91;
+  --greenMD: #8aa772;
+  --greenDK: #323f27;
+  --botLT: #e7b2b1;
+  --botMD: #c9514f;
+  --botDK: #621f1e;
+  --hawkLT: #b4b7ba;
+  --hawkMD: #95999d;
+  --hawkDK: #494d50;
+  --bioLT: #a4ba91;
+  --bioMD: #8aa772;
+  --bioDK: #323f27;
+  --engLT: #e7b2b1;
+  --engMD: #c9514f;
+  --engDK: #621f1e;
+  --psyLT: #b9b0cf;
+  --psyMD: #8e81b1;
+  --psyDK: #50446f;
+  --subduedWarnRed:    #e23232;
+  --subduedWarnYellow: #e29532;
+  --subduedWarnGreen:  #1bba21;
+  --bioTextDK: #26301d;
+  --engTextDK: #3b1312;
+  --psyTextDK: #221d2f;
+  
+  --LT4WASHOUT: #e4e5e7;
+  --LT3WASHOUT: #c9cbcf;
+  --LT2WASHOUT: #aeb1b7;
+  
+  --costTextLT: #ffffff;
+  --costTextDK: #000000;
+  
+  --textWarnRed: #AE2626;
+  --textWarnGreen: #179A1B;
+}
+
+/*
+===================================================================================================================
+===================================================================================================================
+===================================================================================================================
+-----------------------------------   Default formatting
+===================================================================================================================
+===================================================================================================================
+===================================================================================================================
+*/
+
+h2 , h3, h4, h5, h6, p {
+  padding-top: 1px;
+  padding-right: 1px;
+  padding-bottom: 1px;
+  padding-left: 1px;
+  line-height: 1;
+  margin-bottom: 1px;
+  margin-top: 1px;
+
+}
+
+body {
+  overflow: scroll;
+  background-color: var(--LT2);
+}
+
+.FOOTER {
+  height:300px;
+
+}
+
+h1 {
+  padding-top: 1px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-size: 20px;
+  margin: 0px;
+  line-height: 1;
+}
+h2 {
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-size: 18px;
+  margin: 0px;
+  line-height: 1;
+}
+h5 {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: bold;
+  font-size: 14px;
+  line-height: 1;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+}
+/*
+===================================================================================================================
+===================================================================================================================
+===================================================================================================================
+-----------------------------------   Default formatting
+===================================================================================================================
+===================================================================================================================
+===================================================================================================================
+*/
+
+
+
+.maindiv {
+  display: grid;
+  width: 100%;
+  max-width: 100vw;
+  grid-template-columns: 50% 50%;
+  grid-template-rows: 250px auto;
+  grid-column-gap: 5px;
+  padding: 8px 4px 8px 4px;
+  background-color: transparent;
+}
+
+
+.fretBoard {
+  display: grid;
+  width: 200px;
+  height: 1000px;
+  grid-template-columns: 25% 25% 25% 25%;
+  grid-column-gap: 0px;
+  margin: 0px;
+  padding: 0px;
+  background-color: var(--LT2);
+  grid-area: span 1 / span 1;
+}
+
+.stringBoard {
+  display: grid;
+  width: 50px;
+  height: 800px;
+  background-color: var(--LT3);
+  margin: 0px;
+  padding: 0px;
+  grid-template-columns: 100%;
+  grid-auto-flow: row;
+  grid-area: span 1 / span 1;
+  position: relative;
+}
+.fret {
+  width: 50px;
+  height: 50px;
+  background-color: var(--LT4);
+  margin: 0px;
+  padding: 0px;
+  grid-area: span 1 / span 1;
+  position: relative;
+  text-align: center;
+  
+}
+.fretNote {
+  width: 30px;
+  height: 30px;
+  border-style: solid;
+  border-color: var(--black);
+  border-width: 1px;
+  border-radius: 30px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  background-color: var(--DK4);
+  color: var(--LT4);
+  text-align: center;
+  line-height: 30px;
+  text-size: 10px;
+}
+.smallFretNote {
+  width: 15px;
+  height: 15px;
+  border-style: solid;
+  border-color: var(--LT4);
+  border-width: 1px;
+  border-radius: 15px;
+  background-color: var(--LT4);
+  text-align: center;
+  line-height: 15px;
+  font-size: 10px;
+  color: var(--LT1);  
+}
+
+.stringLine {
+  position: absolute;
+  height: 1000px;
+  width: 25px;
+  border-right-style: solid;
+  border-right-color: var(--black);
+  border-right-width: 2px;
+  z-index: 10;
+  pointer-events: none;
+}

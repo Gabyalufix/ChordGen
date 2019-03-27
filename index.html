@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" type="text/css" href="main.css" />
+
+
+<style>
+
+
+
+</style>
+
+
+</head>
+<body>
+
+
+<div class="maindiv">
+<div class="maindivInner"id="maindivInner_CONTROLPANEL">
+
+Instrument:
+<select id="INSTRUMENT_SELECT">
+  <option value="MANDOLIN">       Mandolin</option>
+</select>
+<br>
+
+<input type="radio" name="chordSelectMode" value="RootType">
+Select Root: 
+<select id="SELECT_ROOT">
+  <option value="1">       C</option>
+  <option value="2">       C#/Db</option>
+  <option value="3">       D</option>
+  <option value="4">       D#/Eb</option>
+  <option value="5">       E</option>
+  <option value="6">       F</option>
+  <option value="7">       F#/Gb</option>
+  <option value="8">       G</option>
+  <option value="9">       G#/Ab</option>
+  <option value="10">      A</option>
+  <option value="11">      A#/Bb</option>
+  <option value="12">      B</option>
+</select>
+ and type 
+<select id="SELECT_CHORDTYPE">
+  <option value="M">       Major</option>
+  <option value="m">       Minor</option>
+  <option value="7">       7th</option>
+  <option value="7">       maj7</option>
+  <option value="6">       6th</option>
+  <option value="6">       dim</option>
+</select>
+
+<BR>
+
+<input type="radio" name="chordSelectMode" value="ScaleDegree" checked="checked">
+Or select scale:
+<select id="SELECT_SCALEKEY">
+  <option value="1">       C</option>
+  <option value="2">       C#/Db</option>
+  <option value="3">       D</option>
+  <option value="4">       D#/Eb</option>
+  <option value="5">       E</option>
+  <option value="6">       F</option>
+  <option value="7">       F#/Gb</option>
+  <option value="8">       G</option>
+  <option value="9">       G#/Ab</option>
+  <option value="10">      A</option>
+  <option value="11">      A#/Bb</option>
+  <option value="12">      B</option>
+</select>
+<select id="SELECT_SCALEKEYTYPE">
+  <option value="Major">       Major</option>
+  <option value="Minor">       Minor</option>
+</select>
+
+and Degree:
+<select id="SELECT_CHORDDEGREE">
+  <option value="1">       I</option>
+  <option value="2">       ii</option>
+  <option value="3">       iii</option>
+  <option value="4">       IV</option>
+  <option value="5">       V</option>
+  <option value="6">       vi</option>
+  <option value="7">       vii</option>
+</select>
+
+</div>
+
+<div class="maindivInner"id="maindivInner_CHORDPANEL">
+
+<div class="fretBoard" id="fretBoard">
+  <div class="stringBoard" id="GSTRING">
+  <div class="stringLine"></div>
+     <div class="fret" id="GSTRING1"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING2"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING3"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING4"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING5"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING6"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING7"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING8"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING9"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING10"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING11"><div class="fretNote">G1</div> </div>
+	 <div class="fret" id="GSTRING12"><div class="fretNote">G1</div> </div>
+  </div>
+  <div class="stringBoard" id="DSTRING">
+  <div class="stringLine"></div>
+     <div class="fret" id="DSTRING1"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING2"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING3"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING4"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING5"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING6"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING7"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING8"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING9"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING10"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING11"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="DSTRING12"><div class="fretNote">G1</div></div>
+  </div>
+  <div class="stringBoard" id="ASTRING">
+  <div class="stringLine"></div>
+     <div class="fret" id="ASTRING1"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING2"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING3"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING4"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING5"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING6"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING7"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING8"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING9"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING10"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING11"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ASTRING12"><div class="fretNote">G1</div></div>
+  </div>
+  <div class="stringBoard" id="ESTRING">
+  <div class="stringLine"></div>
+     <div class="fret" id="ESTRING1"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING2"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING3"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING4"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING5"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING6"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING7"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING8"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING9"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING10"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING11"><div class="fretNote">G1</div></div>
+	 <div class="fret" id="ESTRING12"><div class="fretNote">G1</div></div>
+  </div>
+</div>
+
+
+</div>
+
+</div>
+
+
+<script type="text/javascript" src="util.js"></script>
+
+</body>
+</html>
