@@ -140,7 +140,6 @@ h5 {
   background-color: transparent;
 }
 
-
 .fretBoard {
   display: grid;
   height: 1000px;
@@ -152,6 +151,26 @@ h5 {
   grid-area: span 1 / span 1;
 }
 
+.SELECT_NOTE{
+	width: 35px;
+	height: 25px;
+}
+.SELECT_NOTE_SPACER{
+	width: 30px;
+	height: 25px;
+}
+.stringBoardHolder {
+  width: 50px;
+  height: 800px;
+  margin: 0px;
+  padding: 0px;
+  display: grid;
+  grid-template-columns: 50px;
+  grid-template-rows: 25px auto;
+  grid-auto-flow: row;
+  grid-column-gap: 0px;
+  grid-area: span 1 / span 1;
+}
 .stringBoard {
   display: grid;
   width: 50px;

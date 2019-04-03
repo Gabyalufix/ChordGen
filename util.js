@@ -9,6 +9,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+NOTE_NAMES_GENERAL = ["C","C#/Db","D","D#/Eb",
+                    "E","F","F#/Gb","G",
+                    "G#/Ab","A","A#/Bb","B"];
+
 NOTE_NAMES_SHARP = ["C","C#","D","D#",
                     "E","F","F#","G",
                     "G#","A","A#","B"]
@@ -189,6 +193,14 @@ function instrument(
     this.fretSpacing = fretSpacing;
     this.fretDots = fretDots;
     this.fretDoubleDots = fretDoubleDots;
+    
+    this.copyInstrument = function(){
+       return new instrument(this.instrumentName,
+                         this.stringIIX.slice(),
+                         this.fretSpacing.slice(),
+                         this.fretDots.slice(),
+                         this.fretDoubleDots.slice())
+    }
 }
 
 INSTRUMENT_MANDOLIN = new instrument(
@@ -222,10 +234,23 @@ INSTRUMENTS = {
 CURRENT_INSTRUMENT = INSTRUMENTS["MANDOLIN"];
 FRETBOARD_LENGTH = 800;
 
-
+function getNoteSelector(){
+  //NOTE_NAMES_GENERAL
+  
+  var ns = document.createElement("select");
+  ns.classList.add("SELECT_NOTE");
+  for(var i=0; i < NOTE_NAMES_SHARP.length; i++){
+    var nn = document.createElement("option");
+    nn.textContent = NOTE_NAMES_SHARP[i];
+    nn.value = i+"";
+    ns.appendChild(nn);
+  }
+  return ns;
+}
 
 function setInstrument(){
-  var inst = INSTRUMENTS[ document.getElementById("INSTRUMENT_SELECT").value ];
+  var inst = INSTRUMENTS[ document.getElementById("INSTRUMENT_SELECT").value ].copyInstrument();
+  CURRENT_INSTRUMENT = inst;
   var fretboard = document.getElementById("fretBoard");
   fretboard.innerHTML = "";
   var spacing = [];
@@ -239,6 +264,9 @@ function setInstrument(){
   var slab = document.createElement("div");
   slab.classList.add("stringLabel");
   fretboard.appendChild(slab);
+  var sns = document.createElement("div");
+  sns.classList.add("SELECT_NOTE_SPACER");
+  slab.appendChild(sns);
   for(var j=0; j < spacing.length; j++){
     var fb = document.createElement("div");
     fb.classList.add("fretLabel");
@@ -249,9 +277,28 @@ function setInstrument(){
   }
 
   for(var i = 0; i < inst.stringIIX.length; i++){
+    var sbh = document.createElement("div");
+    sbh.classList.add("stringBoardHolder");
+    var stringNoteSelector = getNoteSelector();
+    sbh.appendChild(stringNoteSelector);
+    stringNoteSelector.value = ""+inst.stringIIX[i];
+
     var sb = document.createElement("div");
+    sb.sbh = sbh;
+    sb.spacing = spacing;
+    sb.fretNotes = [];
+    sb.stringNoteSelector = stringNoteSelector;
     sb.classList.add("stringBoard");
-    document.getElementById("fretBoard").appendChild(sb);
+    stringNoteSelector.sb = sb
+    stringNoteSelector.stringIdx = i;
+    stringNoteSelector.onchange = function(){
+      var iix = parseInt(this.value);
+      tuneStringToNote(this.sb, iix);
+      CURRENT_INSTRUMENT.stringIIX[this.stringIdx] = iix;
+      calculateChords();
+    }
+    sbh.appendChild(sb);
+    document.getElementById("fretBoard").appendChild(sbh);
     var ss = document.createElement("div");
     ss.classList.add("stringLine");
     sb.appendChild(ss);
@@ -263,11 +310,20 @@ function setInstrument(){
       fb.style.height = spacing[j]+"px";
       sb.appendChild(fb);
       fb.appendChild(fn);
+      sb.fretNotes.push(fn);
       fn.textContent = getNoteName( inst.stringIIX[i] + j );
     }
   }
-  CURRENT_INSTRUMENT = inst;
+  calculateChords();
 }
+
+function tuneStringToNote(sb, iix){
+  for(var i=0; i < sb.fretNotes.length; i++){
+    sb.fretNotes[i] = getNoteName( iix + i );
+  }
+}
+
+
 document.getElementById("INSTRUMENT_SELECT").onchange = setInstrument
 
 CHORDSETS = {
@@ -360,5 +416,8 @@ function setupScaleChords(){
 document.getElementById("SELECT_SCALEKEY").onchange = setupScaleChords
 document.getElementById("SELECT_SCALEKEYTYPE").onchange = setupScaleChords
 
-setInstrument()
 setupScaleChords()
+document.getElementsByClassName("CHORD_BUTTON")[0].onclick();
+
+setInstrument()
+
