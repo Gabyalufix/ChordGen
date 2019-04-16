@@ -58,40 +58,39 @@ CHORD_TYPE_INTERVALS = {
   "9sus4":[5,2,3,4]
 }
 
-CHORD_TYPE_DESC = {
-  "M":["3","5"],
-  "m":["m3","5"],
-  "6":["3","5","6"],
-  "m6":["m3","5","6"],
-  "6/9":["3","5","6","9"],
-  "maj7":["3","5","7"],
-  
-  "7":[],
-  "maj7":[4,3,4],
-  "m7":[3,4,3],
-  "dim":[3,3],
-  "aug":[4,4],
-  "6":[4,3,2],
-  "m6":[3,4,2],
-  "6/9":[4,3,2,5],
-  "sus2":[2,5],
-  "sus4":[5,2],
-  "m7b5":[3,3,4],
-  "dim7":[3,3,3],
-  "7b5":[4,2,4],
-  "7#5":[4,4,2],
-  "m(maj7)":[3,4,4],
-  "m7b5":[3,3,4],
-  "dim7":[3,3,3],
-  "9":[4,3,3,4],
-  "9b5":[4,2,4,4],
-  "9#5":[4,4,2,4],
-  "maj9":[4,3,4,3],
-  "m9":[3,4,3,4],
-  "m11":[3,4,3,7],
-  "7sus4":[5,2,3],
-  "7sus2":[2,5,3],
-  "9sus4":[5,2,3,4],
+CHORD_TYPE_DEF = {
+  "M":["R","3","5"],
+  "":["R","3","5"],
+  "m":["R","m3","5"],
+  "6":["R","3","5","6"],
+  "m6":["R","m3","5","6"],
+  "6/9":["R","3","5","6","9"],
+  "maj7":["R","3","5","7"],
+  "7":["R","3","5","m7"],
+  "7b5":["R","3","m5","m7"],
+  "7#5":["R","3","#5","m7"],
+  "m7":["R","m3","5","m7"],
+  "m(maj7)":["R","m3","5","7"],
+  "m7b5":["R","m3","m5","m7"],
+  "dim7":["R","m3","m5","6"],
+  "9":["R","3","5","m7","9"],
+  "9b5":["R","3","m5","m7","9"],
+  "9#5":["R","3","#5","m7","9"],
+  "maj9":["R","3","5","7","9"],
+  "m9":["R","m3","5","m7","9"],
+  "m11":["R","m3","5","m7","11"],
+  "13":["R","3","5","m7","13"],
+  "maj13":["R","3","5","7","13"],
+  "m13":["R","m3","5","m7","13"],
+  "sus4":["R","4","5"],
+  "sus2":["R","2","5"],
+  "7sus4":["R","4","5","m7"],
+  "7sus2":["R","2","5","m7"],
+  "9sus4":["R","4","5","m7","9"],
+  "9sus2":["R","2","5","m7","9"],
+  "aug":["R","3","m6"],
+  "dim":["R","m3","m5"],
+  "5":["R","5"]
 }
 
 
@@ -173,13 +172,20 @@ function calculateChords(){
   var chordRoot = CURRENT_CHORDROOT_IIX;
   var chordType = CURRENT_CHORDTYPE;
   
-  var chordIntervals = CHORD_TYPE_INTERVALS[chordType];
-  var chordIIX = [chordRoot];
-  currIIX = chordRoot;
-  for(var i=0; i < chordIntervals.length; i++){
-    currIIX = currIIX + chordIntervals[i];
-    chordIIX.push( currIIX % 12 );
+  var chordRelNotes = CHORD_TYPE_DEF[chordType];
+  var chordIIX = [];
+  for(var i=0; i < chordRelNotes.length; i++){
+      relNote = CHORDNOTE_INTERVALS[ chordRelNotes[i]];
+      chordIIX.push( (relNote + chordRoot) % 12 );
   }
+  
+  //var chordIntervals = CHORD_TYPE_INTERVALS[chordType];
+  //var chordIIX = [chordRoot];
+  //currIIX = chordRoot;
+  //for(var i=0; i < chordIntervals.length; i++){
+  //  currIIX = currIIX + chordIntervals[i];
+  //  chordIIX.push( currIIX % 12 );
+  //}
   console.log("chord: "+getNoteName(chordRoot)+" "+chordType+":");
   console.log( "    ["+chordIIX.join(",")+"]" );
   
@@ -191,16 +197,25 @@ function calculateChords(){
     console.log("   String: "+selem.id+" has base note: "+fiix);
     for(var eidx = 0; eidx < stringChildren.length; eidx++){
       if(stringChildren[eidx].classList.contains("fret")){
-        var fretNote = stringChildren[eidx].getElementsByClassName("fretNote")[0];
+        var fretNote  = stringChildren[eidx].getElementsByClassName("fretNote")[0];
+        var fretLabel  = fretNote.getElementsByClassName("chordNoteLabel")[0];
         if( chordIIX.includes( fiix ) ){
+          var iixix = chordIIX.indexOf(fiix);
+          var chordNoteLabel = chordRelNotes[iixix];
+          fretLabel.style.display = "block";
+          fretLabel.textContent = chordNoteLabel;
           fretNote.style.display = "block";
-          fretNote.textContent = getNoteName(fiix);
+          //fretNote.textContent = getNoteName(fiix);
           fretNote.classList.remove("smallFretNote");
+          fretNote.classList.add("labelledFretNote");
         } else if( scaleIIX.includes(fiix) ){
+          fretLabel.style.display = "none";
           fretNote.style.display = "block";
-          fretNote.textContent = getNoteName(fiix);
+          //fretNote.textContent = getNoteName(fiix);
           fretNote.classList.add("smallFretNote");
+          fretNote.classList.remove("labelledFretNote");
         } else {
+          fretLabel.style.display = "none";
           fretNote.style.display = "none";
         }
         fiix = (fiix + 1) % 12;
@@ -373,15 +388,22 @@ function setInstrument(){
     ss.classList.add("stringLine");
     sb.appendChild(ss);
     for(var j=0; j < spacing.length; j++){
+      console.log(" j = "+j);
       var fb = document.createElement("div");
       var fn = document.createElement("div");
+      var noteLabel = document.createElement("div");
       fb.classList.add("fret");
       fn.classList.add("fretNote");
+      noteLabel.classList.add("chordNoteLabel");
+
       fb.style.height = spacing[j]+"px";
       sb.appendChild(fb);
       fb.appendChild(fn);
       sb.fretNotes.push(fn);
+      console.log(noteLabel)
+      console.log(fn)
       fn.textContent = getNoteName( inst.stringIIX[i] + j );
+      fn.appendChild(noteLabel);
     }
   }
   calculateChords();

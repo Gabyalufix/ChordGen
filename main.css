@@ -270,6 +270,44 @@ h5 {
   font-size: 10px;
   color: var(--LT1);  
 }
+.labelledFretNote {
+  width: 30px;
+  height: 30px;
+  border-style: solid;
+  border-color: var(--black);
+  border-width: 1px;
+  border-radius: 5px 30px 30px 30px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  background-color: var(--DK4);
+  color: var(--LT4);
+  text-align: center;
+  line-height: 30px;
+  font-size: 16px;
+}
+.chordNoteLabel {
+  display: none;
+  width: 10px;
+  height: 10px;
+  border-style: solid none none solid;
+  border-color: var(--black);
+  border-width: 1px;
+  border-radius: 5px ;
+  margin: 0;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 15;
+  background-color: var(--DK4);
+  color: var(--LT4);
+  text-align: center;
+  line-height: 10px;
+  font-size: 10px;
+}
 
 .stringLine {
   position: absolute;
