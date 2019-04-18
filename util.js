@@ -72,6 +72,7 @@ CHORD_TYPE_DEF = {
   "m(maj7)":["R","m3","5","7"],
   "m7b5":["R","m3","m5","m7"],
   "dim7":["R","m3","m5","6"],
+  "hdim7":["R","m3","m5","m7"],
   "9":["R","3","5","m7","9"],
   "9b5":["R","3","m5","m7","9"],
   "9#5":["R","3","#5","m7","9"],
@@ -110,7 +111,8 @@ CHORD_TYPE_LIST = [
   "m7"  ,       
   "m(maj7)" ,   
   "m7b5"    ,   
-  "dim7"    ,   
+  "dim7"    ,
+  "hdim7",
   "9"       ,   
   "9b5"     ,   
   "9#5"     ,   
@@ -460,8 +462,8 @@ document.getElementById("INSTRUMENT_SELECT").onchange = setInstrument
 CHORDSETS = {
  Major:[
     [ [0,"M"],[1,"m"],[2,"m"],[3,"M"],[4,"M"],[5,"m"],[6,"dim"] ],
-    [ [0,"maj7"],[1,"m7"],[2,"m7"],[3,"maj7"],[4,"7"],[5,"m7"] ],
-    [ [0,"6"], [1,"m6"],[3,"6"],[4,"6"] ],
+    [ [0,"maj7"],[1,"m7"],[2,"m7"],[3,"maj7"],[4,"7"],[5,"m7"], [6,"hdim7"] ],
+    [ [0,"6"], [1,"m6"],[3,"6"],[4,"6"], [6,"dim7"] ],
     [ [0,"sus4"],[1,"sus4"],[2,"sus4"],[4,"sus4"],[5,"sus4"]],
     [ [0,"sus2"],[1,"sus2"],[3,"sus2"],[4,"sus2"],[5,"sus2"]]
  ],
@@ -507,8 +509,14 @@ function setupScaleChords(){
   var scaleIIX = getScaleIIX(intervals,rootIIX);
   var chordSet = CHORDSETS[currentScaleType];
   
-  var panel = document.getElementById("CHORD_PANEL");
-  panel.innerHTML = "";
+  var panelset = document.getElementById("CHORD_PANELSET0");
+  panelset.innerHTML = "";
+  var panel = document.createElement("div");
+  panel.classList.add("CHORD_PANEL3");
+  panelset.appendChild(panel);
+  panelset.panels = [panel];
+  
+  
   for(var i=0; i < chordSet.length; i++){
     //var cbc = document.createElement("div");
     //cbc.classList.add("CHORD_BUTTON_COLUMN");
@@ -541,6 +549,14 @@ function setupScaleChords(){
           console.log("     no button added.");
       }
     }
+    
+    if( i % 3 == 2){
+      panel = document.createElement("div");
+      panel.classList.add("CHORD_PANEL3");
+      panelset.appendChild(panel);
+      panelset.panels.push(panel);
+    }
+    
   }
   setupOtherChords()
 }
