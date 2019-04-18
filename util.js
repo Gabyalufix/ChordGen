@@ -437,6 +437,11 @@ function calculateChords(){
           //fretNote.textContent = getNoteName(fiix);
           fretNote.classList.remove("smallFretNote");
           fretNote.classList.add("labelledFretNote");
+          if(scaleIIX.includes(fiix)){
+              fretNote.classList.remove("fretNoteOffKey");
+          } else {
+              fretNote.classList.add("fretNoteOffKey");
+          }
         } else if( scaleIIX.includes(fiix) ){
           fretLabel.style.display = "none";
           fretNote.style.display = "block";

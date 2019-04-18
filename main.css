@@ -257,6 +257,10 @@ h5 {
   line-height: 30px;
   text-size: 10px;
 }
+.fretNoteOffKey {
+  border-color: var(--subduedWarnRed);
+  border-width: 2.5px;
+}
 .smallFretNote {
   width: 15px;
   height: 15px;
@@ -274,8 +278,6 @@ h5 {
   width: 30px;
   height: 30px;
   border-style: solid;
-  border-color: var(--black);
-  border-width: 1px;
   border-radius: 5px 30px 30px 30px;
   margin: 0;
   position: absolute;
@@ -293,7 +295,7 @@ h5 {
   display: none;
   width: 10px;
   height: 10px;
-  border-style: solid none none solid;
+  border-style: none
   border-color: var(--black);
   border-width: 1px;
   border-radius: 5px ;
