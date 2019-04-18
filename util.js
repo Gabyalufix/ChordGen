@@ -60,7 +60,6 @@ CHORD_TYPE_INTERVALS = {
 
 CHORD_TYPE_DEF = {
   "M":["R","3","5"],
-  "":["R","3","5"],
   "m":["R","m3","5"],
   "6":["R","3","5","6"],
   "m6":["R","m3","5","6"],
@@ -90,9 +89,49 @@ CHORD_TYPE_DEF = {
   "9sus2":["R","2","5","m7","9"],
   "aug":["R","3","m6"],
   "dim":["R","m3","m5"],
-  "5":["R","5"]
+  "5":["R","5"],
+  "add9":["R","3","5","9"],
+  "add11":["R","3","5","11"],
+  "add13":["R","3","5","13"],
+  "m(add9)":["R","m3","5","9"],
+  "m(add11)":["R","m3","5","11"],
+  "m(add13)":["R","m3","5","13"]
 }
-
+CHORD_TYPE_LIST = [
+  "M"   ,       
+  "m"   ,       
+  "6"   ,       
+  "m6"  ,       
+  "6/9" ,       
+  "maj7",       
+  "7"   ,       
+  "7b5" ,       
+  "7#5" ,       
+  "m7"  ,       
+  "m(maj7)" ,   
+  "m7b5"    ,   
+  "dim7"    ,   
+  "9"       ,   
+  "9b5"     ,   
+  "9#5"     ,   
+  "maj9"    ,   
+  "m9"      ,   
+  "m11"     ,   
+  "13"      ,   
+  "maj13"   ,   
+  "m13"     ,   
+  "sus4"    ,   
+  "sus2"    ,   
+  "7sus4"   ,   
+  "7sus2"   ,   
+  "9sus4"   ,   
+  "9sus2"   ,   
+  "aug"     ,   
+  "dim"     ,   
+  "5"       ,
+  "add9",  "add11","add13",
+  "m(add9)",  "m(add11)","m(add13)"
+]
 
 CHORDNOTE_INTERVALS = {
   "R":0,
@@ -503,6 +542,52 @@ function setupScaleChords(){
       }
     }
   }
+  setupOtherChords()
+}
+
+
+function setupOtherChords(){
+  var currScale = getCurrentScale()
+  var currentScaleType = currScale.scaleType;
+  var rootIIX = currScale.rootIIX;
+  var intervals = currScale.intervals;
+  var scaleIIX = getScaleIIX(intervals,rootIIX);
+  var chordSet = CHORD_TYPE_LIST;
+  
+  var panelset = document.getElementById("CHORD_PANELSET");
+  panelset.innerHTML = "";
+  var panel = document.createElement("div");
+  panel.classList.add("CHORD_PANEL3");
+  panelset.appendChild(panel);
+  panelset.panels = [panel];
+  
+  for(var i=0; i < chordSet.length; i++){
+    //var cbc = document.createElement("div");
+    //cbc.classList.add("CHORD_BUTTON_COLUMN");
+    //panel.appendChild(cbc);
+    
+    console.log("starting chordset: "+i);
+    for(var j=0; j < scaleIIX.length; j++){
+      var chordRootIIX = scaleIIX[j];
+      var chordRootID  = getNoteName(chordRootIIX);
+      console.log("   checking: "+j);
+          var cb = document.createElement("button");
+          cb.classList.add("CHORD_BUTTON");
+          cb.textContent = chordRootID + getChordTypeString(chordSet[i]);
+          cb.chordString = chordRootID + chordSet[i];
+          cb.chordRootIIX = chordRootIIX;
+          cb.chordType    = chordSet[i];
+          cb.onclick = selectChord;
+          panel.appendChild(cb);
+          console.log("     button added: "+chordRootID + chordSet[i]);
+    }
+    if( i % 3 == 2){
+      panel = document.createElement("div");
+      panel.classList.add("CHORD_PANEL3");
+      panelset.appendChild(panel);
+      panelset.panels.push(panel);
+    }
+  }
 }
 
 document.getElementById("SELECT_SCALEKEY").onchange = setupScaleChords
@@ -513,3 +598,4 @@ document.getElementsByClassName("CHORD_BUTTON")[0].onclick();
 
 setInstrument()
 
+setupOtherChords();
