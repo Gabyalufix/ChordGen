@@ -24,8 +24,30 @@ CURRENT_SCALE_SHARPTYPE = "sharp";
 
 KEY_TYPE_INTERVALS = {
   "Major":[2,2,1,2,2,2],
-  "Minor":[2,1,2,2,1,2]
+  "Minor":[2,1,2,2,1,2],
+  "MelodicMinor":[2,1,2,2,2,2,1],
+  "HarmonicMinor":[2,1,2,2,1,3,1],
+  "Dorian":[2,1,2,2,2,1,2],
+  "Phrygian":[1,2,2,2,1,2,2],
+  "Lydian":[2,2,2,1,2,2,1],
+  "Mixolydian":[2,2,1,2,2,1,2],
+  "Aeolian":[2,1,2,2,1,2,2],
+  "HungarianMjr":[3,1,2,1,2,1,2],
+  "Gypsy":[2,1,3,1,1,3,1]
 }
+KEY_TYPE_TITLES=[
+    ["Major","Major"],
+    ["Minor","Natural Minor"],
+    ["MelodicMinor","Melodic Minor"],
+    ["HarmonicMinor","Harmonic Minor"],
+    ["Dorian","Dorian"],
+    ["Phrygian","Phrygian"],
+    ["Lydian","Lydian"],
+    ["Mixolydian","Mixolydian"],
+    ["Aeolian","Aeolian"],
+    ["HungarianMjr","Hungarian Major"],
+    ["Gypsy","\"Gypsy\""]
+]
 
 CHORD_TYPE_INTERVALS = {
   "M":[4,3],
@@ -177,7 +199,7 @@ CHORDSET_ROW_LABELS = {
 }
 
 CHORDSET_OPTIONS = [
-    ["M","m","dim","aug"],
+    ["M","m","dim","aug","5","sus4","sus2"],
     ["7","m7","maj7","m(maj7)","m7b5","7b5","7#5","hdim7"],
     ["6","m6","dim7"],
     ["sus4"],
@@ -185,6 +207,15 @@ CHORDSET_OPTIONS = [
     ["7sus4","7sus2"]
 ]
 
+
+document.getElementById("SELECT_SCALEKEYTYPE").innerHTML = "";
+for(var i=0; i < KEY_TYPE_TITLES.length; i++){
+    //<option value="Major">       Major</option>
+       var scaleKeyOpt = document.createElement("option");
+       scaleKeyOpt.textContent = KEY_TYPE_TITLES[i][1];
+       scaleKeyOpt.value = KEY_TYPE_TITLES[i][0];
+       document.getElementById("SELECT_SCALEKEYTYPE").appendChild(scaleKeyOpt)
+}
 
 function instrument(
    instrumentName,
@@ -259,6 +290,7 @@ function getCurrentScale(){
   var currentScale = (document.getElementById("SELECT_SCALEKEY").value);
   console.log("currentScale: "+currentScale);
   var currentScaleType = document.getElementById("SELECT_SCALEKEYTYPE").value;
+  console.log("currentScaleType: "+currentScaleType);
   var intervals = KEY_TYPE_INTERVALS[ currentScaleType ];
   var rootIIX = parseInt(currentScale)-1;
   return {rootIIX:rootIIX, scaleType:currentScaleType,intervals:intervals}
@@ -275,6 +307,48 @@ function getScaleIIX(intervals,rootIIX){
   return scaleIIX;
 }
 
+function getChordNotes(chordRootIIX,chordType){
+  var chordRelNotes = CHORD_TYPE_DEF[chordType];
+  var chordIIX = [];
+  for(var i=0; i < chordRelNotes.length; i++){
+      relNote = CHORDNOTE_INTERVALS[ chordRelNotes[i]];
+      chordIIX.push( (relNote + chordRootIIX) % 12 );
+  }
+  return chordIIX;
+}
+
+function setupChordSynon(){
+  var chordRoot = CURRENT_CHORDROOT_IIX;
+  var chordType = CURRENT_CHORDTYPE;
+  var chordRelNotes = CHORD_TYPE_DEF[chordType];
+  var chordNotes = getChordNotes(chordRoot,chordType);
+  chordNotes.sort();
+  
+  var panelset = document.getElementById("CHORD_PANELSET");
+  for( var i=0; i < panelset.panels.length; i++){
+      var panel = panelset.panels[i];
+      for(var j=0; j < panel.chordElems.length; j++){
+          var cb = panel.chordElems[j];
+          var currChordNotes = getChordNotes(cb.chordRootIIX,cb.chordType);
+          var isMatch = true;
+          if(currChordNotes.length == chordNotes.length){
+              for(var k =0; k < chordNotes.length; k++){
+                  if(currChordNotes[k] != chordNotes[k]){
+                      isMatch = false;
+                      break;
+                  }
+              }
+          } else {
+              isMatch = false;
+          }
+          if(isMatch){
+              cb.classList.add("CHORD_BUTTON_SYNON")
+          } else {
+              cb.classList.remove("CHORD_BUTTON_SYNON")
+          }
+      }
+  }
+}
 function calculateChords(){
   var currScale = getCurrentScale()
   var currentScaleType = currScale.scaleType;
@@ -348,6 +422,7 @@ function calculateChords(){
       }
     }
   }
+  setupChordSynon();
   
 }
 
@@ -566,6 +641,7 @@ function isChordInKey(chordRootIIX,chordType,scaleIIX){
     return inKey;
 }
 
+
 function setupScaleChords(){
   console.log("SETTING UP SCALE CHORDS")
   var currScale = getCurrentScale()
@@ -581,7 +657,8 @@ function setupScaleChords(){
   panel.classList.add("CHORD_PANEL3");
   panelset.appendChild(panel);
   panelset.panels = [panel];
-  
+  panel.chordElems = [];
+
   
   for(var i=0; i < CHORDSET_OPTIONS.length; i++){
     //var cbc = document.createElement("div");
@@ -606,6 +683,7 @@ function setupScaleChords(){
             cb.chordRootIIX = chordRootIIX;
             cb.chordType    = chordType;
             cb.onclick = selectChord;
+            panel.chordElems.push(cb);
             panel.appendChild(cb);
             //console.log("     button added: "+chordRootID + chordSet[i][k][1]);
             hasBeenAdded = 1;
@@ -616,6 +694,7 @@ function setupScaleChords(){
           var cb = document.createElement("button");
           cb.classList.add("CHORD_NOBUTTON");
           panel.appendChild(cb);
+          
           //console.log("     no button added.");
       }
     }
@@ -625,6 +704,7 @@ function setupScaleChords(){
       panel.classList.add("CHORD_PANEL3");
       panelset.appendChild(panel);
       panelset.panels.push(panel);
+      panel.chordElems = [];
     }
     
   }
@@ -644,6 +724,7 @@ function setupOtherChords(){
   panelset.innerHTML = "";
   var panel = document.createElement("div");
   panel.classList.add("CHORD_PANEL3");
+  panel.chordElems = [];
   panelset.appendChild(panel);
   panelset.panels = [panel];
   
@@ -664,6 +745,7 @@ function setupOtherChords(){
           cb.chordString = chordRootID + chordType;
           cb.chordRootIIX = chordRootIIX;
           cb.chordType    = chordType;
+          panel.chordElems.push(cb);
           var inKey = isChordInKey(chordRootIIX,chordType,scaleIIX);
           if(! inKey){
               cb.classList.add("CHORD_BUTTON_OFFKEY");
@@ -679,12 +761,16 @@ function setupOtherChords(){
       panel.classList.add("CHORD_PANEL3");
       panelset.appendChild(panel);
       panelset.panels.push(panel);
+      panel.chordElems = [];
     }
   }
 }
 
 document.getElementById("SELECT_SCALEKEY").onchange = setupScaleChords
 document.getElementById("SELECT_SCALEKEYTYPE").onchange = setupScaleChords
+
+//KEY_TYPE_INTERVALS KEY_TYPE_TITLES
+
 
 setupScaleChords()
 document.getElementsByClassName("CHORD_BUTTON")[0].onclick();

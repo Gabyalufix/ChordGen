@@ -386,7 +386,9 @@ h5 {
   color: var(--DK1);
   background-color: var(--LT4);
 }
-
+.CHORD_BUTTON_SYNON{
+  color: var(--subduedWarnGreen);
+}
 .CHORD_BUTTON_SELECTED {
   border: 1px dotted var(--LT4);
   background-color: var(--DK3);
