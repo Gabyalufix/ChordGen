@@ -341,34 +341,34 @@ h5 {
   width: 100%;
   max-width: 210px;
   height: 290px;
-  background-color: var(--LT4);
+  background-color: var(--MID);
   display: grid;
   grid-template-columns: auto auto auto;
   grid-column-gap: 0px;
   grid-auto-flow: column;
   grid-template-rows: repeat(7, 40px);
   margin: 0px;
-  padding: 0px;
+  padding: 4px 0px;
   
 }
 
 .CHORD_PANELSET{
   width: 420px;
   max-width: 50vw;
-  background-color: var(--LT3);
+  background-color: var(--MID);
   border-style: solid none none solid;
   border-color: var(--black);
   border-width: 1px;
   border-radius: 2px ;
   display: flex;
   flex-wrap:  wrap;
-  margin: 3px;
-  padding: 0px;
+  margin: 0px 4px;
+  padding: 0px 4px;
 }
 
 
 .CHORD_BUTTON{
-  border: 1px dotted var(--LT2);
+  border: 0.5px dotted var(--DK1);
   padding: 2px;
   font-family: Monospace;
   font-weight: bold;

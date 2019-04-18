@@ -33,7 +33,11 @@ KEY_TYPE_INTERVALS = {
   "Mixolydian":[2,2,1,2,2,1,2],
   "Aeolian":[2,1,2,2,1,2,2],
   "HungarianMjr":[3,1,2,1,2,1,2],
-  "Gypsy":[2,1,3,1,1,3,1]
+  "Gypsy":[2,1,3,1,1,3,1],
+  "Chromatic":[1,1,1,1,1,1,1,1,1,1,1],
+  "MajorPentatonic":[2,2,3,2,3],
+  "MinorPentatonic":[3,2,2,3,2],
+  "ChinesePentatonic":[4,2,1,4,1]
 }
 KEY_TYPE_TITLES=[
     ["Major","Major"],
@@ -46,7 +50,11 @@ KEY_TYPE_TITLES=[
     ["Mixolydian","Mixolydian"],
     ["Aeolian","Aeolian"],
     ["HungarianMjr","Hungarian Major"],
-    ["Gypsy","\"Gypsy\""]
+    ["Gypsy","\"Gypsy\""],
+    ["Chromatic","Chromatic"],
+    ["MajorPentatonic","Major Pentatonic"],
+    ["MinorPentatonic","Minor Pentatonic"],
+    ["ChinesePentatonic","Chinese Pentatonic"]
 ]
 
 CHORD_TYPE_INTERVALS = {
@@ -687,13 +695,16 @@ function setupScaleChords(){
   
   var panelset = document.getElementById("CHORD_PANELSET0");
   panelset.innerHTML = "";
+  //panel.style.height = 40 * scaleIIX.length;
   var panel = document.createElement("div");
   panel.classList.add("CHORD_PANEL3");
   panelset.appendChild(panel);
   panelset.panels = [panel];
   panel.chordElems = [];
-
-  
+      panel.style["height"] = "" + (40 * scaleIIX.length) + "px";
+      panel.style["grid-template-rows"] = "repeat("+scaleIIX.length+", 40px)"
+      //console.log("height set to:"+(40 * scaleIIX.length) + "px" + " = " +panel.style["height"])
+      
   for(var i=0; i < CHORDSET_OPTIONS.length; i++){
     //var cbc = document.createElement("div");
     //cbc.classList.add("CHORD_BUTTON_COLUMN");
@@ -740,6 +751,10 @@ function setupScaleChords(){
       panelset.appendChild(panel);
       panelset.panels.push(panel);
       panel.chordElems = [];
+      panel.style["height"] = "" + (40 * scaleIIX.length) + "px";
+      panel.style["grid-template-rows"] = "repeat("+scaleIIX.length+", 40px)"
+      console.log("height set to:"+(40 * scaleIIX.length) + "px" + " = " +panel.style["height"])
+  
     }
     
   }
@@ -762,18 +777,20 @@ function setupOtherChords(){
   panel.chordElems = [];
   panelset.appendChild(panel);
   panelset.panels = [panel];
-  
+      panel.style["height"] = "" + (40 * scaleIIX.length) + "px";
+      panel.style["grid-template-rows"] = "repeat("+scaleIIX.length+", 40px)"
+      
   for(var i=0; i < chordSet.length; i++){
     //var cbc = document.createElement("div");
     //cbc.classList.add("CHORD_BUTTON_COLUMN");
     //panel.appendChild(cbc);
     var chordType = chordSet[i];
-    console.log("starting chordset: "+i);
+    //console.log("starting chordset: "+i);
     for(var j=0; j < scaleIIX.length; j++){
       var chordRootIIX = scaleIIX[j];
       var chordRootID  = getNoteName(chordRootIIX);
       
-      console.log("   checking: "+j);
+      //console.log("   checking: "+j);
           var cb = document.createElement("button");
           cb.classList.add("CHORD_BUTTON");
           cb.textContent = chordRootID + getChordTypeString(chordType);
@@ -789,7 +806,7 @@ function setupOtherChords(){
           }
           cb.onclick = selectChord;
           panel.appendChild(cb);
-          console.log("     button added: "+chordRootID + chordSet[i]);
+         // console.log("     button added: "+chordRootID + chordSet[i]);
     }
     if( i % 3 == 2){
       panel = document.createElement("div");
@@ -797,6 +814,8 @@ function setupOtherChords(){
       panelset.appendChild(panel);
       panelset.panels.push(panel);
       panel.chordElems = [];
+      panel.style["height"] = "" + (40 * scaleIIX.length) + "px";
+      panel.style["grid-template-rows"] = "repeat("+scaleIIX.length+", 40px)"
     }
   }
 }
