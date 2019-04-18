@@ -322,7 +322,7 @@ h5 {
 
 .CHORD_PANEL{
   width: 420px;
-  max-width: 100vw;
+  max-width: 50vw;
   height: 350px;
   background-color: var(--LT4);
   display: grid;
@@ -336,8 +336,8 @@ h5 {
 
 
 .CHORD_PANEL3{
-  width: 210px;
-  max-width: 100vw;
+  width: 100%;
+  max-width: 210px;
   height: 290px;
   background-color: var(--LT4);
   display: grid;

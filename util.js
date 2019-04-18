@@ -301,7 +301,9 @@ function getScaleIIX(intervals,rootIIX){
   var scaleIIX = [rootIIX];
   for(var i=0; i < intervals.length; i++){
     currIIX = currIIX + intervals[i];
-    scaleIIX.push( currIIX % 12 );
+    if(! scaleIIX.includes(currIIX % 12)){
+      scaleIIX.push( currIIX % 12 );
+    }
   }
   console.log("---- scale: "+scaleIIX.join(","));
   return scaleIIX;
@@ -324,7 +326,34 @@ function setupChordSynon(){
   var chordNotes = getChordNotes(chordRoot,chordType);
   chordNotes.sort();
   
-  var panelset = document.getElementById("CHORD_PANELSET");
+
+  var panelset = document.getElementById("CHORD_PANELSET0");
+  for( var i=0; i < panelset.panels.length; i++){
+      var panel = panelset.panels[i];
+      for(var j=0; j < panel.chordElems.length; j++){
+          var cb = panel.chordElems[j];
+          var currChordNotes = getChordNotes(cb.chordRootIIX,cb.chordType);
+          currChordNotes.sort();
+          var isMatch = true;
+          if(currChordNotes.length == chordNotes.length){
+              for(var k =0; k < chordNotes.length; k++){
+                  if(currChordNotes[k] != chordNotes[k]){
+                      isMatch = false;
+                      break;
+                  }
+              }
+          } else {
+              isMatch = false;
+          }
+          if(isMatch){
+              cb.classList.add("CHORD_BUTTON_SYNON")
+          } else {
+              cb.classList.remove("CHORD_BUTTON_SYNON")
+          }
+      }
+  }
+  
+  panelset = document.getElementById("CHORD_PANELSET");
   for( var i=0; i < panelset.panels.length; i++){
       var panel = panelset.panels[i];
       for(var j=0; j < panel.chordElems.length; j++){
@@ -682,6 +711,7 @@ function setupScaleChords(){
             cb.chordString = chordRootID + chordType;
             cb.chordRootIIX = chordRootIIX;
             cb.chordType    = chordType;
+            cb.aa_posDesc = i+"/"+j+"/"+k;
             cb.onclick = selectChord;
             panel.chordElems.push(cb);
             panel.appendChild(cb);
@@ -694,12 +724,12 @@ function setupScaleChords(){
           var cb = document.createElement("button");
           cb.classList.add("CHORD_NOBUTTON");
           panel.appendChild(cb);
-          
+          cb.aa_posDesc = i+"/"+j+"/-"
           //console.log("     no button added.");
       }
     }
     
-    if( i % 3 == 2){
+    if( i % 3 == 2  && i != CHORDSET_OPTIONS.length - 1){
       panel = document.createElement("div");
       panel.classList.add("CHORD_PANEL3");
       panelset.appendChild(panel);
