@@ -374,13 +374,27 @@ h5 {
   border-style: dotted;
   position: relative;
   grid-area: span 1 / span 1;
-
+  color: var(--black);
 }
+.CHORD_BUTTON_INKEY{
+  color: var(--black);
+  background-color: var(--LT2);
+}
+.CHORD_BUTTON_OFFKEY{
+  font-style: italic;
+  font-weight: normal;
+  color: var(--DK1);
+  background-color: var(--LT4);
+}
+
 .CHORD_BUTTON_SELECTED {
   border: 1px dotted var(--LT4);
   background-color: var(--DK3);
   color: var(--white);
 }
+
+
+
 .CHORD_NOBUTTON{
   border: 0px solid var(--LT2);
   padding: 2px;

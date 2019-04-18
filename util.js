@@ -154,6 +154,91 @@ CHORDNOTE_INTERVALS = {
 }
 //  "6/9":[2,2,3,2],
 
+
+CHORDSETS = {
+ Major:[
+    [ [0,"M"],[1,"m"],[2,"m"],[3,"M"],[4,"M"],[5,"m"],[6,"dim"] ],
+    [ [0,"maj7"],[1,"m7"],[2,"m7"],[3,"maj7"],[4,"7"],[5,"m7"], [6,"hdim7"] ],
+    [ [0,"6"], [1,"m6"],[3,"6"],[4,"6"], [6,"dim7"] ],
+    [ [0,"sus4"],[1,"sus4"],[2,"sus4"],[4,"sus4"],[5,"sus4"]],
+    [ [0,"sus2"],[1,"sus2"],[3,"sus2"],[4,"sus2"],[5,"sus2"]]
+ ],
+ Minor:[
+    [ [0,"m"],[1,"dim"],[2,"M"],[3,"m"],[4,"m"],[5,"M"],[6,"M"] ],
+    [ [0,"m7"],[1,"m7b5"],[2,"maj7"],[3,"m7"],[4,"m7"],[5,"maj7"],[6,"7"]],
+    [  [2,"m6"],[3,"m6"],[5,"6"],[6,"6"] ],
+    [ [0,"sus4"],[2,"sus4"],[3,"sus4"],[4,"sus4"],[6,"sus4"]],
+    [ [0,"sus2"],[2,"sus2"],[3,"sus2"],[5,"sus2"],[6,"sus2"]]
+ ]
+ 
+}
+CHORDSET_ROW_LABELS = {
+  Major : ["I","ii","iii","IV","V","vi","vii"]
+}
+
+CHORDSET_OPTIONS = [
+    ["M","m","dim","aug"],
+    ["7","m7","maj7","m(maj7)","m7b5","7b5","7#5","hdim7"],
+    ["6","m6","dim7"],
+    ["sus4"],
+    ["sus2"],
+    ["7sus4","7sus2"]
+]
+
+
+function instrument(
+   instrumentName,
+   stringIIX,
+   fretSpacing,
+   fretDots,
+   fretDoubleDots
+  ){
+    this.instrumentName = instrumentName;
+    this.stringIIX = stringIIX;
+    this.fretSpacing = fretSpacing;
+    this.fretDots = fretDots;
+    this.fretDoubleDots = fretDoubleDots;
+    
+    this.copyInstrument = function(){
+       return new instrument(this.instrumentName,
+                         this.stringIIX.slice(),
+                         this.fretSpacing.slice(),
+                         this.fretDots.slice(),
+                         this.fretDoubleDots.slice())
+    }
+}
+
+INSTRUMENT_MANDOLIN = new instrument(
+  "Mandolin",
+  [7,2,9,4],
+  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
+  [],
+  []
+)
+INSTRUMENT_UKELELE = new instrument(
+  "Ukelele",
+  [7,0,4,9],
+  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
+  [],
+  []
+)
+INSTRUMENT_GUITAR = new instrument(
+  "Guitar",
+  [4,9,2,7,11,4],
+  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
+  [],
+  []
+)
+
+
+INSTRUMENTS = {
+ MANDOLIN:INSTRUMENT_MANDOLIN,
+ UKELELE:INSTRUMENT_UKELELE,
+ GUITAR:INSTRUMENT_GUITAR
+}
+CURRENT_INSTRUMENT = INSTRUMENTS["UKELELE"];
+FRETBOARD_LENGTH = 800;
+
 function getNoteName(ixx){
   if(CURRENT_SCALE_SHARPTYPE == "sharp"){
     return NOTE_NAMES_SHARP[(ixx % 12)]
@@ -278,87 +363,6 @@ document.getElementById("SELECT_SCALEKEY").onchange = calculateChords
 document.getElementById("SELECT_SCALEKEYTYPE").onchange = calculateChords
 document.getElementById("SELECT_CHORDDEGREE").onchange = calculateChords
 
-FRET_SPACING = {
-mandolin:[
-20,
-56.126,
-52.976,
-50.002,
-47.196,
-44.547,
-42.047,
-39.687,
-37.459,
-35.357,
-33.373,
-31.499,
-29.732,
-28.063,
-26.488,
-25.001,
-23.598,
-22.273]
-}
-FRET_DOTS = {
-mandolin:[]
-}
-FRET_DOUBLEDOTS = {
-mandolin:[]
-}
-
-
-function instrument(
-   instrumentName,
-   stringIIX,
-   fretSpacing,
-   fretDots,
-   fretDoubleDots
-  ){
-    this.instrumentName = instrumentName;
-    this.stringIIX = stringIIX;
-    this.fretSpacing = fretSpacing;
-    this.fretDots = fretDots;
-    this.fretDoubleDots = fretDoubleDots;
-    
-    this.copyInstrument = function(){
-       return new instrument(this.instrumentName,
-                         this.stringIIX.slice(),
-                         this.fretSpacing.slice(),
-                         this.fretDots.slice(),
-                         this.fretDoubleDots.slice())
-    }
-}
-
-INSTRUMENT_MANDOLIN = new instrument(
-  "Mandolin",
-  [7,2,9,4],
-  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
-  [],
-  []
-)
-INSTRUMENT_UKELELE = new instrument(
-  "Ukelele",
-  [7,0,4,9],
-  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
-  [],
-  []
-)
-INSTRUMENT_GUITAR = new instrument(
-  "Guitar",
-  [4,9,2,7,11,4],
-  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
-  [],
-  []
-)
-
-
-INSTRUMENTS = {
- MANDOLIN:INSTRUMENT_MANDOLIN,
- UKELELE:INSTRUMENT_UKELELE,
- GUITAR:INSTRUMENT_GUITAR
-}
-CURRENT_INSTRUMENT = INSTRUMENTS["MANDOLIN"];
-FRETBOARD_LENGTH = 800;
 
 function getNoteSelector(){
   //NOTE_NAMES_GENERAL
@@ -459,27 +463,6 @@ function tuneStringToNote(sb, iix){
 
 document.getElementById("INSTRUMENT_SELECT").onchange = setInstrument
 
-CHORDSETS = {
- Major:[
-    [ [0,"M"],[1,"m"],[2,"m"],[3,"M"],[4,"M"],[5,"m"],[6,"dim"] ],
-    [ [0,"maj7"],[1,"m7"],[2,"m7"],[3,"maj7"],[4,"7"],[5,"m7"], [6,"hdim7"] ],
-    [ [0,"6"], [1,"m6"],[3,"6"],[4,"6"], [6,"dim7"] ],
-    [ [0,"sus4"],[1,"sus4"],[2,"sus4"],[4,"sus4"],[5,"sus4"]],
-    [ [0,"sus2"],[1,"sus2"],[3,"sus2"],[4,"sus2"],[5,"sus2"]]
- ],
- Minor:[
-    [ [0,"m"],[1,"dim"],[2,"M"],[3,"m"],[4,"m"],[5,"M"],[6,"M"] ],
-    [ [0,"m7"],[1,"m7b5"],[2,"maj7"],[3,"m7"],[4,"m7"],[5,"maj7"],[6,"7"]],
-    [  [2,"m6"],[3,"m6"],[5,"6"],[6,"6"] ],
-    [ [0,"sus4"],[2,"sus4"],[3,"sus4"],[4,"sus4"],[6,"sus4"]],
-    [ [0,"sus2"],[2,"sus2"],[3,"sus2"],[5,"sus2"],[6,"sus2"]]
- ]
- 
-}
-CHORDSET_ROW_LABELS = {
-  Major : ["I","ii","iii","IV","V","vi","vii"]
-}
-
 CURRENT_CHORDROOT_IIX = 0;
 CURRENT_CHORDTYPE     = "M";
 function selectChord(){
@@ -501,7 +484,7 @@ function getChordTypeString( ct ){
   }
 }
 
-function setupScaleChords(){
+function setupScaleChords_OLD(){
   var currScale = getCurrentScale()
   var currentScaleType = currScale.scaleType;
   var rootIIX = currScale.rootIIX;
@@ -561,6 +544,93 @@ function setupScaleChords(){
   setupOtherChords()
 }
 
+CHORDSET_OPTIONS = [
+    ["M","m","dim","aug"],
+    ["7","m7","maj7","m(maj7)","m7b5","7b5","7#5","hdim7"],
+    ["6","m6","dim7"],
+    ["sus4"],
+    ["sus2"],
+    ["7sus4","7sus2"]
+]
+
+function isChordInKey(chordRootIIX,chordType,scaleIIX){
+    var chordRelNotes = CHORD_TYPE_DEF[chordType];
+    var inKey = true;
+    for(var z=0; z < chordRelNotes.length; z++){
+            relNote = CHORDNOTE_INTERVALS[ chordRelNotes[z]];
+            var fiix = (relNote + chordRootIIX) % 12;
+            if( ! scaleIIX.includes(fiix) ){
+                inKey = false;
+            }
+    }
+    return inKey;
+}
+
+function setupScaleChords(){
+  console.log("SETTING UP SCALE CHORDS")
+  var currScale = getCurrentScale()
+  var currentScaleType = currScale.scaleType;
+  var rootIIX = currScale.rootIIX;
+  var intervals = currScale.intervals;
+  var scaleIIX = getScaleIIX(intervals,rootIIX);
+  var chordSet = CHORDSETS[currentScaleType];
+  
+  var panelset = document.getElementById("CHORD_PANELSET0");
+  panelset.innerHTML = "";
+  var panel = document.createElement("div");
+  panel.classList.add("CHORD_PANEL3");
+  panelset.appendChild(panel);
+  panelset.panels = [panel];
+  
+  
+  for(var i=0; i < CHORDSET_OPTIONS.length; i++){
+    //var cbc = document.createElement("div");
+    //cbc.classList.add("CHORD_BUTTON_COLUMN");
+    //panel.appendChild(cbc);
+    var chortOpts = CHORDSET_OPTIONS[i];
+    //console.log("starting chordset: "+i);
+    for(var j=0; j < scaleIIX.length; j++){
+      var chordRootIIX = scaleIIX[j];
+      var chordRootID  = getNoteName(chordRootIIX);
+      //console.log("   checking: "+j);
+      var hasBeenAdded = 0;
+      for(var k=0; k < chortOpts.length; k++){
+        if(hasBeenAdded == 0){
+          var chordType = chortOpts[k];
+          var inKey = isChordInKey(chordRootIIX,chordType,scaleIIX);
+          if(inKey){
+            var cb = document.createElement("button");
+            cb.classList.add("CHORD_BUTTON");
+            cb.textContent = chordRootID + getChordTypeString(chordType);
+            cb.chordString = chordRootID + chordType;
+            cb.chordRootIIX = chordRootIIX;
+            cb.chordType    = chordType;
+            cb.onclick = selectChord;
+            panel.appendChild(cb);
+            //console.log("     button added: "+chordRootID + chordSet[i][k][1]);
+            hasBeenAdded = 1;
+          }
+        }
+      }
+      if(hasBeenAdded == 0) {
+          var cb = document.createElement("button");
+          cb.classList.add("CHORD_NOBUTTON");
+          panel.appendChild(cb);
+          //console.log("     no button added.");
+      }
+    }
+    
+    if( i % 3 == 2){
+      panel = document.createElement("div");
+      panel.classList.add("CHORD_PANEL3");
+      panelset.appendChild(panel);
+      panelset.panels.push(panel);
+    }
+    
+  }
+  setupOtherChords()
+}
+
 
 function setupOtherChords(){
   var currScale = getCurrentScale()
@@ -581,18 +651,25 @@ function setupOtherChords(){
     //var cbc = document.createElement("div");
     //cbc.classList.add("CHORD_BUTTON_COLUMN");
     //panel.appendChild(cbc);
-    
+    var chordType = chordSet[i];
     console.log("starting chordset: "+i);
     for(var j=0; j < scaleIIX.length; j++){
       var chordRootIIX = scaleIIX[j];
       var chordRootID  = getNoteName(chordRootIIX);
+      
       console.log("   checking: "+j);
           var cb = document.createElement("button");
           cb.classList.add("CHORD_BUTTON");
-          cb.textContent = chordRootID + getChordTypeString(chordSet[i]);
-          cb.chordString = chordRootID + chordSet[i];
+          cb.textContent = chordRootID + getChordTypeString(chordType);
+          cb.chordString = chordRootID + chordType;
           cb.chordRootIIX = chordRootIIX;
-          cb.chordType    = chordSet[i];
+          cb.chordType    = chordType;
+          var inKey = isChordInKey(chordRootIIX,chordType,scaleIIX);
+          if(! inKey){
+              cb.classList.add("CHORD_BUTTON_OFFKEY");
+          } else {
+              cb.classList.add("CHORD_BUTTON_INKEY");
+          }
           cb.onclick = selectChord;
           panel.appendChild(cb);
           console.log("     button added: "+chordRootID + chordSet[i]);
