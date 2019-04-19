@@ -334,54 +334,65 @@ function setupChordSynon(){
   var chordNotes = getChordNotes(chordRoot,chordType);
   chordNotes.sort();
   
-
-  var panelset = document.getElementById("CHORD_PANELSET0");
-  for( var i=0; i < panelset.panels.length; i++){
-      var panel = panelset.panels[i];
-      for(var j=0; j < panel.chordElems.length; j++){
-          var cb = panel.chordElems[j];
-          var currChordNotes = getChordNotes(cb.chordRootIIX,cb.chordType);
-          currChordNotes.sort();
-          var isMatch = true;
-          if(currChordNotes.length == chordNotes.length){
-              for(var k =0; k < chordNotes.length; k++){
-                  if(currChordNotes[k] != chordNotes[k]){
-                      isMatch = false;
-                      break;
-                  }
-              }
-          } else {
-              isMatch = false;
-          }
-          if(isMatch){
-              cb.classList.add("CHORD_BUTTON_SYNON")
-          } else {
-              cb.classList.remove("CHORD_BUTTON_SYNON")
-          }
-      }
-  }
+  var panelsetset = document.getElementsByClassName("CHORD_PANELSET");
   
-  panelset = document.getElementById("CHORD_PANELSET");
-  for( var i=0; i < panelset.panels.length; i++){
-      var panel = panelset.panels[i];
-      for(var j=0; j < panel.chordElems.length; j++){
-          var cb = panel.chordElems[j];
-          var currChordNotes = getChordNotes(cb.chordRootIIX,cb.chordType);
-          var isMatch = true;
-          if(currChordNotes.length == chordNotes.length){
-              for(var k =0; k < chordNotes.length; k++){
-                  if(currChordNotes[k] != chordNotes[k]){
-                      isMatch = false;
-                      break;
+  for(var pss = 0; pss < panelsetset.length; pss++){
+      panelset = panelsetset[pss];
+      for( var i=0; i < panelset.panels.length; i++){
+          var panel = panelset.panels[i];
+          for(var j=0; j < panel.chordElems.length; j++){
+              var cb = panel.chordElems[j];
+              var currChordNotes = getChordNotes(cb.chordRootIIX,cb.chordType);
+              currChordNotes.sort();
+              var isMatch = true;
+              var isSub = false;
+              var isSuper = false;
+              if(currChordNotes.length == chordNotes.length){
+                  for(var k =0; k < chordNotes.length; k++){
+                      if(currChordNotes[k] != chordNotes[k]){
+                          isMatch = false;
+                          break;
+                      }
+                  }
+              } else if(currChordNotes.length > chordNotes.length){
+                  isMatch = false;
+                  isSuper = true;
+                  for(var k =0; k < chordNotes.length; k++){
+                      if(! currChordNotes.includes(chordNotes[k])){
+                          isSuper = false;
+                          break;
+                      }
+                  }
+              } else {
+                  isMatch = false;
+                  isSub = true;
+                  for(var k =0; k < currChordNotes.length; k++){
+                      if(! chordNotes.includes(currChordNotes[k])){
+                          isSub = false;
+                          break;
+                      }
                   }
               }
-          } else {
-              isMatch = false;
-          }
-          if(isMatch){
-              cb.classList.add("CHORD_BUTTON_SYNON")
-          } else {
-              cb.classList.remove("CHORD_BUTTON_SYNON")
+              if(isMatch){
+                  cb.classList.add("CHORD_BUTTON_SYNON")
+              } else {
+                  cb.classList.remove("CHORD_BUTTON_SYNON")
+              }
+              while(cb.firstElementChild) {
+                 cb.removeChild(cb.firstElementChild);
+              }
+              if(isSuper){
+                  var arrow = document.createElement("div");
+                  arrow.classList.add("CHORD_BUTTON_UPARROW");
+                  arrow.textContent = "+";
+                  cb.appendChild(arrow);
+              }
+              if(isSub){
+                  var arrow = document.createElement("div");
+                  arrow.classList.add("CHORD_BUTTON_DNARROW");
+                  arrow.textContent = "-";
+                  cb.appendChild(arrow);
+              }
           }
       }
   }

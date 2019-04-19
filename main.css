@@ -396,7 +396,47 @@ h5 {
   background-color: var(--DK3);
   color: var(--white);
 }
-
+.CHORD_BUTTON_UPARROW {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  transform: translate(-85%, 0%);
+  height: 10px;
+  width:  10px;
+  color: var(--subduedWarnGreen);
+}
+.CHORD_BUTTON_DNARROW {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  height: 10px;
+  width:  10px;
+  font-size: larger;
+  color: var(--subduedWarnRed);
+}
+/*
+.CHORD_BUTTON_UPARROW {
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid var(--subduedWarnGreen);
+  height: 0px;
+  width:  0px;
+}
+.CHORD_BUTTON_DNARROW {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--subduedWarnGreen);
+  height: 0px;
+  width:  0px;
+}*/
 
 
 .CHORD_NOBUTTON{
