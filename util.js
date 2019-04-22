@@ -278,6 +278,22 @@ INSTRUMENTS = {
 CURRENT_INSTRUMENT = INSTRUMENTS["UKELELE"];
 FRETBOARD_LENGTH = 800;
 
+
+CURRENT_CHORDROOT_IIX = 0;
+CURRENT_CHORDTYPE     = "M";
+function selectChord(){
+  var allButtons = document.getElementsByClassName("CHORD_BUTTON");
+  for(var i=0; i < allButtons.length; i++){
+    allButtons[i].classList.remove("CHORD_BUTTON_SELECTED");
+  }
+  this.classList.add("CHORD_BUTTON_SELECTED");
+  CURRENT_CHORDROOT_IIX = this.chordRootIIX;
+  CURRENT_CHORDTYPE = this.chordType;
+  calculateChords()
+}
+
+
+
 function getNoteName(ixx){
   if(CURRENT_SCALE_SHARPTYPE == "sharp"){
     return NOTE_NAMES_SHARP[(ixx % 12)]
@@ -437,43 +453,47 @@ function calculateChords(){
   console.log("chord: "+getNoteName(chordRoot)+" "+chordType+":");
   console.log( "    ["+chordIIX.join(",")+"]" );
   
-  var stringElem = document.getElementsByClassName("stringBoard");
-  for( var sidx = 0; sidx < stringElem.length; sidx++){
-    var selem = stringElem[sidx];
-    var stringChildren = selem.children;
-    var fiix = CURRENT_INSTRUMENT.stringIIX[sidx];
-    console.log("   String: "+selem.id+" has base note: "+fiix);
-    for(var eidx = 0; eidx < stringChildren.length; eidx++){
-      if(stringChildren[eidx].classList.contains("fret")){
-        var fretNote  = stringChildren[eidx].getElementsByClassName("fretNote")[0];
-        var fretLabel  = fretNote.getElementsByClassName("chordNoteLabel")[0];
-        if( chordIIX.includes( fiix ) ){
-          var iixix = chordIIX.indexOf(fiix);
-          var chordNoteLabel = chordRelNotes[iixix];
-          fretLabel.style.display = "block";
-          fretLabel.textContent = chordNoteLabel;
-          fretNote.style.display = "block";
-          //fretNote.textContent = getNoteName(fiix);
-          fretNote.classList.remove("smallFretNote");
-          fretNote.classList.add("labelledFretNote");
-          if(scaleIIX.includes(fiix)){
-              fretNote.classList.remove("fretNoteOffKey");
-          } else {
-              fretNote.classList.add("fretNoteOffKey");
+  var activeInstrumentList = document.getElementsByClassName("instrumentPanel");
+  for( var iidx = 0; iidx < activeInstrumentList.length; iidx++){
+      var currInst = activeInstrumentList[i];
+      var stringElem = activeInstrumentList[i].getElementsByClassName("stringBoard");
+      for( var sidx = 0; sidx < stringElem.length; sidx++){
+        var selem = stringElem[sidx];
+        var stringChildren = selem.children;
+        var fiix = currInst.inst.stringIIX[sidx];
+        console.log("   String: "+selem.id+" has base note: "+fiix);
+        for(var eidx = 0; eidx < stringChildren.length; eidx++){
+          if(stringChildren[eidx].classList.contains("fret")){
+            var fretNote  = stringChildren[eidx].getElementsByClassName("fretNote")[0];
+            var fretLabel  = fretNote.getElementsByClassName("chordNoteLabel")[0];
+            if( chordIIX.includes( fiix ) ){
+              var iixix = chordIIX.indexOf(fiix);
+              var chordNoteLabel = chordRelNotes[iixix];
+              fretLabel.style.display = "block";
+              fretLabel.textContent = chordNoteLabel;
+              fretNote.style.display = "block";
+              //fretNote.textContent = getNoteName(fiix);
+              fretNote.classList.remove("smallFretNote");
+              fretNote.classList.add("labelledFretNote");
+              if(scaleIIX.includes(fiix)){
+                  fretNote.classList.remove("fretNoteOffKey");
+              } else {
+                  fretNote.classList.add("fretNoteOffKey");
+              }
+            } else if( scaleIIX.includes(fiix) ){
+              fretLabel.style.display = "none";
+              fretNote.style.display = "block";
+              //fretNote.textContent = getNoteName(fiix);
+              fretNote.classList.add("smallFretNote");
+              fretNote.classList.remove("labelledFretNote");
+            } else {
+              fretLabel.style.display = "none";
+              fretNote.style.display = "none";
+            }
+            fiix = (fiix + 1) % 12;
           }
-        } else if( scaleIIX.includes(fiix) ){
-          fretLabel.style.display = "none";
-          fretNote.style.display = "block";
-          //fretNote.textContent = getNoteName(fiix);
-          fretNote.classList.add("smallFretNote");
-          fretNote.classList.remove("labelledFretNote");
-        } else {
-          fretLabel.style.display = "none";
-          fretNote.style.display = "none";
         }
-        fiix = (fiix + 1) % 12;
       }
-    }
   }
   setupChordSynon();
   
@@ -486,11 +506,13 @@ function calculateChords(){
 document.getElementById("SELECT_SCALEKEY").onchange = calculateChords
 document.getElementById("SELECT_ROOT").onchange = calculateChords
 document.getElementById("SELECT_CHORDTYPE").onchange = calculateChords
-document.getElementById("INSTRUMENT_SELECT").onchange = calculateChords
 document.getElementById("SELECT_SCALEKEY").onchange = calculateChords
 document.getElementById("SELECT_SCALEKEYTYPE").onchange = calculateChords
 document.getElementById("SELECT_CHORDDEGREE").onchange = calculateChords
 
+//document.getElementById("INSTRUMENT_SELECT").onchange = calculateChords
+
+(document.getElementsByClassName("INSTRUMENT_SELECT")).map( x => x.onchange = calculateChords );
 
 function getNoteSelector(){
   //NOTE_NAMES_GENERAL
@@ -507,9 +529,10 @@ function getNoteSelector(){
 }
 
 function setInstrument(){
-  var inst = INSTRUMENTS[ document.getElementById("INSTRUMENT_SELECT").value ].copyInstrument();
-  CURRENT_INSTRUMENT = inst;
-  var fretboard = document.getElementById("fretBoard");
+  var inst = INSTRUMENTS[ this.selector.value ].copyInstrument();
+  //CURRENT_INSTRUMENT = inst;
+  var fretboard = this.fretBoard;
+  this.instrument = inst;
   fretboard.innerHTML = "";
   var spacing = [];
   var totalSpacing = 0;
@@ -533,7 +556,8 @@ function setInstrument(){
     fb.style.height = spacing[j]+"px";
     fb.style["line-height"] = spacing[j]+"px";
   }
-
+  //CURRENT_INSTRUMENT.stringIIX[sidx]
+  
   for(var i = 0; i < inst.stringIIX.length; i++){
     var sbh = document.createElement("div");
     sbh.classList.add("stringBoardHolder");
@@ -552,7 +576,7 @@ function setInstrument(){
     stringNoteSelector.onchange = function(){
       var iix = parseInt(this.value);
       tuneStringToNote(this.sb, iix);
-      CURRENT_INSTRUMENT.stringIIX[this.stringIdx] = iix;
+      inst.stringIIX[this.stringIdx] = iix;
       calculateChords();
     }
     sbh.appendChild(sb);
@@ -589,20 +613,7 @@ function tuneStringToNote(sb, iix){
 }
 
 
-document.getElementById("INSTRUMENT_SELECT").onchange = setInstrument
-
-CURRENT_CHORDROOT_IIX = 0;
-CURRENT_CHORDTYPE     = "M";
-function selectChord(){
-  var allButtons = document.getElementsByClassName("CHORD_BUTTON");
-  for(var i=0; i < allButtons.length; i++){
-    allButtons[i].classList.remove("CHORD_BUTTON_SELECTED");
-  }
-  this.classList.add("CHORD_BUTTON_SELECTED");
-  CURRENT_CHORDROOT_IIX = this.chordRootIIX;
-  CURRENT_CHORDTYPE = this.chordType;
-  calculateChords()
-}
+//document.getElementById("INSTRUMENT_SELECT").onchange = setInstrument
 
 function getChordTypeString( ct ){
   if(ct == "M"){
@@ -831,6 +842,15 @@ function setupOtherChords(){
   }
 }
 
+function addValuesToSelect(selector,valueList){
+  for(var i=0; i < valueList.length; i++){
+    var ov = document.createElement("option");
+    ov.textContent = valueList[i][1];
+    ov.value = valueList[i][0];
+    selector.appendChild(ov);
+  }
+}
+
 document.getElementById("SELECT_SCALEKEY").onchange = setupScaleChords
 document.getElementById("SELECT_SCALEKEYTYPE").onchange = setupScaleChords
 
@@ -840,6 +860,31 @@ document.getElementById("SELECT_SCALEKEYTYPE").onchange = setupScaleChords
 setupScaleChords()
 document.getElementsByClassName("CHORD_BUTTON")[0].onclick();
 
-setInstrument()
+var ipanel0 = document.getElementById("instrumentPanel_0")
+var activeInstruments = [ipanel0]
+
+
+INSTRUMENTS_IDLIST = [
+ ["MANDOLIN","Mandolin"],
+ ["UKELELE","Ukelele"],
+ ["GUITAR","Guitar"]
+]
+
+var iselect0 = document.createElement("select");
+iselect0.id = "INSTRUMENT_SELECT_0";
+iselect0.classList.add("INSTRUMENT_SELECT");
+addValuesToSelect(iselect0,INSTRUMENTS_IDLIST);
+ipanel0.selector = iselect0;
+
+ipanel0.fretBoard = document.createElement("div")
+ipanel0.fretBoard.id = "fretBoard_0";
+ipanel0.fretBoard.classList.add("fretBoard");
+ipanel0.setInstrument = setInstrument
+
+ipanel0.appendChild(iselect0);
+ipanel0.appendChild(ipanel0.fretBoard);
+
+ipanel0.setInstrument();
 
 setupOtherChords();
+
