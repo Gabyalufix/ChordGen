@@ -843,6 +843,9 @@ function addValuesToSelect(selector,valueList){
   }
 }
 
+
+var activeInstruments = []
+
 function addInstrument( instrumentID , initialInstrument ){
     var ipanel = document.getElementById("instrumentPanel_"+instrumentID)
     ipanel.classList.add("instrumentPanel")
@@ -868,14 +871,10 @@ function addInstrument( instrumentID , initialInstrument ){
     ipanel.appendChild(iselect);
     ipanel.appendChild(ipanel.fretBoard);
     ipanel.setInstrument();
-    
+    activeInstruments.push(ipanel);
 }
 
 console.log("Creating panels, etc...")
-
-var ipanel0 = document.getElementById("instrumentPanel_0")
-ipanel0.classList.add("instrumentPanel")
-var activeInstruments = [ipanel0]
 
 INSTRUMENTS_IDLIST = [
  ["MANDOLIN","Mandolin"],
@@ -934,3 +933,7 @@ console.log("Setting other chords:")
 
 setupOtherChords();
 
+document.getElementById("ADD_INSTRUMENT_BUTTON").selector = document.getElementById("INSTRUMENT_SELECT_ADD")
+document.getElementById("ADD_INSTRUMENT_BUTTON").onclick = function(){
+  addInstrument( activeInstruments.length+"" , this.selector.value )
+}
