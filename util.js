@@ -450,18 +450,18 @@ function calculateChords(){
   //  currIIX = currIIX + chordIntervals[i];
   //  chordIIX.push( currIIX % 12 );
   //}
-  console.log("chord: "+getNoteName(chordRoot)+" "+chordType+":");
-  console.log( "    ["+chordIIX.join(",")+"]" );
+  //console.log("chord: "+getNoteName(chordRoot)+" "+chordType+":");
+  //console.log( "    ["+chordIIX.join(",")+"]" );
   
   var activeInstrumentList = document.getElementsByClassName("instrumentPanel");
   for( var iidx = 0; iidx < activeInstrumentList.length; iidx++){
-      var currInst = activeInstrumentList[i];
-      var stringElem = activeInstrumentList[i].getElementsByClassName("stringBoard");
+      var currInst = activeInstrumentList[iidx];
+      var stringElem = currInst.stringBoardList;
       for( var sidx = 0; sidx < stringElem.length; sidx++){
         var selem = stringElem[sidx];
         var stringChildren = selem.children;
-        var fiix = currInst.inst.stringIIX[sidx];
-        console.log("   String: "+selem.id+" has base note: "+fiix);
+        var fiix = currInst.instrument.stringIIX[sidx];
+        //console.log("   String: "+selem.id+" has base note: "+fiix);
         for(var eidx = 0; eidx < stringChildren.length; eidx++){
           if(stringChildren[eidx].classList.contains("fret")){
             var fretNote  = stringChildren[eidx].getElementsByClassName("fretNote")[0];
@@ -503,17 +503,6 @@ function calculateChords(){
 
 
 
-document.getElementById("SELECT_SCALEKEY").onchange = calculateChords
-document.getElementById("SELECT_ROOT").onchange = calculateChords
-document.getElementById("SELECT_CHORDTYPE").onchange = calculateChords
-document.getElementById("SELECT_SCALEKEY").onchange = calculateChords
-document.getElementById("SELECT_SCALEKEYTYPE").onchange = calculateChords
-document.getElementById("SELECT_CHORDDEGREE").onchange = calculateChords
-
-//document.getElementById("INSTRUMENT_SELECT").onchange = calculateChords
-
-(document.getElementsByClassName("INSTRUMENT_SELECT")).map( x => x.onchange = calculateChords );
-
 function getNoteSelector(){
   //NOTE_NAMES_GENERAL
   
@@ -530,6 +519,7 @@ function getNoteSelector(){
 
 function setInstrument(){
   var inst = INSTRUMENTS[ this.selector.value ].copyInstrument();
+  console.log("Setting instrument :"+this.selector.value);
   //CURRENT_INSTRUMENT = inst;
   var fretboard = this.fretBoard;
   this.instrument = inst;
@@ -557,8 +547,9 @@ function setInstrument(){
     fb.style["line-height"] = spacing[j]+"px";
   }
   //CURRENT_INSTRUMENT.stringIIX[sidx]
-  
+  this.stringBoardList = [];
   for(var i = 0; i < inst.stringIIX.length; i++){
+    //console.log("adding String: "+inst.stringIIX[i]+" to instrument.");
     var sbh = document.createElement("div");
     sbh.classList.add("stringBoardHolder");
     var stringNoteSelector = getNoteSelector();
@@ -579,13 +570,14 @@ function setInstrument(){
       inst.stringIIX[this.stringIdx] = iix;
       calculateChords();
     }
+    this.stringBoardList.push(sb);
     sbh.appendChild(sb);
-    document.getElementById("fretBoard").appendChild(sbh);
+    this.fretBoard.appendChild(sbh);
     var ss = document.createElement("div");
     ss.classList.add("stringLine");
     sb.appendChild(ss);
     for(var j=0; j < spacing.length; j++){
-      console.log(" j = "+j);
+      //console.log(" j = "+j);
       var fb = document.createElement("div");
       var fn = document.createElement("div");
       var noteLabel = document.createElement("div");
@@ -597,8 +589,8 @@ function setInstrument(){
       sb.appendChild(fb);
       fb.appendChild(fn);
       sb.fretNotes.push(fn);
-      console.log(noteLabel)
-      console.log(fn)
+      //console.log(noteLabel)
+      //console.log(fn)
       fn.textContent = getNoteName( inst.stringIIX[i] + j );
       fn.appendChild(noteLabel);
     }
@@ -648,7 +640,7 @@ function setupScaleChords_OLD(){
     for(var j=0; j < scaleIIX.length; j++){
       var chordRootIIX = scaleIIX[j];
       var chordRootID  = getNoteName(chordRootIIX);
-      console.log("   checking: "+j);
+      //console.log("   checking: "+j);
       var hasBeenAdded = 0;
       for(var k=0; k < chordSet[i].length; k++){
         if(chordSet[i][k][0] == j){
@@ -851,18 +843,39 @@ function addValuesToSelect(selector,valueList){
   }
 }
 
-document.getElementById("SELECT_SCALEKEY").onchange = setupScaleChords
-document.getElementById("SELECT_SCALEKEYTYPE").onchange = setupScaleChords
+function addInstrument( instrumentID , initialInstrument ){
+    var ipanel = document.getElementById("instrumentPanel_"+instrumentID)
+    ipanel.classList.add("instrumentPanel")
+    var activeInstruments = [ipanel]
 
-//KEY_TYPE_INTERVALS KEY_TYPE_TITLES
+    var iselect = document.createElement("select");
+    iselect.id = "INSTRUMENT_SELECT_"+instrumentID;
+    iselect.classList.add("INSTRUMENT_SELECT");
+    addValuesToSelect(iselect,INSTRUMENTS_IDLIST);
+    iselect.value = initialInstrument;
+    iselect.ipanel = ipanel;
+    iselect.onchange = function(){
+       console.log("iselect.onchange()");
+       this.ipanel.setInstrument();
+    }
+    ipanel.selector = iselect;
 
+    ipanel.fretBoard = document.createElement("div")
+    ipanel.fretBoard.id = "fretBoard_"+instrumentID;
+    ipanel.fretBoard.classList.add("fretBoard");
+    ipanel.setInstrument = setInstrument
 
-setupScaleChords()
-document.getElementsByClassName("CHORD_BUTTON")[0].onclick();
+    ipanel.appendChild(iselect);
+    ipanel.appendChild(ipanel.fretBoard);
+    ipanel.setInstrument();
+    
+}
+
+console.log("Creating panels, etc...")
 
 var ipanel0 = document.getElementById("instrumentPanel_0")
+ipanel0.classList.add("instrumentPanel")
 var activeInstruments = [ipanel0]
-
 
 INSTRUMENTS_IDLIST = [
  ["MANDOLIN","Mandolin"],
@@ -870,21 +883,54 @@ INSTRUMENTS_IDLIST = [
  ["GUITAR","Guitar"]
 ]
 
-var iselect0 = document.createElement("select");
-iselect0.id = "INSTRUMENT_SELECT_0";
-iselect0.classList.add("INSTRUMENT_SELECT");
-addValuesToSelect(iselect0,INSTRUMENTS_IDLIST);
-ipanel0.selector = iselect0;
+console.log("Setting scale chords...")
 
-ipanel0.fretBoard = document.createElement("div")
-ipanel0.fretBoard.id = "fretBoard_0";
-ipanel0.fretBoard.classList.add("fretBoard");
-ipanel0.setInstrument = setInstrument
+setupScaleChords()
 
-ipanel0.appendChild(iselect0);
-ipanel0.appendChild(ipanel0.fretBoard);
+console.log("Setting instrument...")
 
-ipanel0.setInstrument();
+addInstrument("0","UKELELE");
+
+//var iselect0 = document.createElement("select");
+//iselect0.id = "INSTRUMENT_SELECT_0";
+//iselect0.classList.add("INSTRUMENT_SELECT");
+//addValuesToSelect(iselect0,INSTRUMENTS_IDLIST);
+//ipanel0.selector = iselect0;
+//
+///ipanel0.fretBoard = document.createElement("div")
+//ipanel0.fretBoard.id = "fretBoard_0";
+//ipanel0.fretBoard.classList.add("fretBoard");
+//ipanel0.setInstrument = setInstrument
+//
+//ipanel0.appendChild(iselect0);
+//ipanel0.appendChild(ipanel0.fretBoard);
+//
+//ipanel0.setInstrument();
+
+
+console.log("Instrument set!")
+
+document.getElementById("SELECT_SCALEKEY").onchange = calculateChords
+document.getElementById("SELECT_ROOT").onchange = calculateChords
+document.getElementById("SELECT_CHORDTYPE").onchange = calculateChords
+document.getElementById("SELECT_SCALEKEY").onchange = calculateChords
+document.getElementById("SELECT_SCALEKEYTYPE").onchange = calculateChords
+document.getElementById("SELECT_CHORDDEGREE").onchange = calculateChords
+
+//document.getElementById("INSTRUMENT_SELECT").onchange = calculateChords
+
+//Array.prototype.map.call(document.getElementsByClassName("INSTRUMENT_SELECT"),
+//                          x => x.onchange = calculateChords );
+
+document.getElementById("SELECT_SCALEKEY").onchange = setupScaleChords
+document.getElementById("SELECT_SCALEKEYTYPE").onchange = setupScaleChords
+
+//KEY_TYPE_INTERVALS KEY_TYPE_TITLES
+
+console.log("Setting common chords:")
+
+document.getElementsByClassName("CHORD_BUTTON")[0].onclick();
+console.log("Setting other chords:")
 
 setupOtherChords();
 
