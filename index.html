@@ -17,18 +17,159 @@
 <body>
 
 
-<div class="maindiv">
-<div class="maindivInner"id="maindivInner_CONTROLPANEL">
+<div id="TOP_SECTION" class="TOP_SECTION">
+
+<div id="CONTROL_PANEL" class="CONTROL_PANEL">
 
 Instrument:
-<!--
-<select class="INSTRUMENT_SELECT" id="INSTRUMENT_SELECT_0">
+
+<select class="INSTRUMENT_SELECT" id="INSTRUMENT_SELECT_ADD">
   <option value="MANDOLIN">       Mandolin</option>
   <option value="UKELELE">       Ukelele</option>
   <option value="GUITAR">       Guitar</option>
-
 </select>
-<br>-->
+
+<button id="ADD_INSTRUMENT_BUTTON">
+  ADD
+</button>
+<br>
+<span>Select scale:</span>
+<select id="SELECT_SCALEKEY">
+  <option value="1">       C</option>
+  <option value="2">       C#/Db</option>
+  <option value="3">       D</option>
+  <option value="4">       D#/Eb</option>
+  <option value="5">       E</option>
+  <option value="6">       F</option>
+  <option value="7">       F#/Gb</option>
+  <option value="8">       G</option>
+  <option value="9">       G#/Ab</option>
+  <option value="10">      A</option>
+  <option value="11">      A#/Bb</option>
+  <option value="12">      B</option>
+</select>
+<select id="SELECT_SCALEKEYTYPE">
+  <option value="Major">       Major</option>
+  <option value="Minor">       Minor</option>
+</select>
+
+<label><input type="checkbox" id="ShowPiano" name="ShowPiano" value="value" checked="true">Show Piano</label>
+<label><input type="checkbox" id="ShowStaff" name="ShowStaff" value="value" checked="true">Show Staff</label>
+
+</div>
+
+
+<div id="PIANO_KEYBOARD_SUPER" class="PIANO_KEYBOARD_SUPER">
+<div class="PIANO_KEYBOARD">
+
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">C</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">C#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">D</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">D#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">E</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">F</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">F#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">G</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">G#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">A</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">A#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">B</div></div>
+</div>
+
+
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">C</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">C#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">D</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">D#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">E</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">F</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">F#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">G</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">G#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">A</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">A#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">B</div></div>
+</div>
+
+
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">C</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">C#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">D</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">D#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">E</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">F</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">F#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">G</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">G#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">A</div></div>
+  <div class="PIANO_BLACKKEY PIANO_KEY"><div class="PIANO_KEYLABEL">A#</div></div>
+</div>
+<div class="PIANO_KEYBLOCK">
+  <div class="PIANO_WHITEKEY PIANO_KEY"><div class="PIANO_KEYLABEL">B</div></div>
+</div>
+
+
+
+
+</div>
+
+</div>
+
+
+<div  id="STAFF_HOLDER" class="STAFF_HOLDER">
+
+<div class="STAFF_LINE STAFF_LINE_1"></div>
+<div class="STAFF_LINE STAFF_LINE_2"></div>
+<div class="STAFF_LINE STAFF_LINE_3"></div>
+<div class="STAFF_LINE STAFF_LINE_4"></div>
+<div class="STAFF_LINE STAFF_LINE_5"></div>
+
+
+</div>
+
+
+
+</div>
+
+<div id="maindiv" class="maindiv">
+<div class="maindivInner"id="maindivInner_CONTROLPANEL">
 
 <div style="display:none">
 <input type="radio" name="chordSelectMode" value="RootType" style="display:none">
@@ -61,25 +202,7 @@ Select Root:
 <BR>
 
 <input type="radio" name="chordSelectMode" value="ScaleDegree" checked="checked" style="display:none">
-<span>Select scale:</span>
-<select id="SELECT_SCALEKEY">
-  <option value="1">       C</option>
-  <option value="2">       C#/Db</option>
-  <option value="3">       D</option>
-  <option value="4">       D#/Eb</option>
-  <option value="5">       E</option>
-  <option value="6">       F</option>
-  <option value="7">       F#/Gb</option>
-  <option value="8">       G</option>
-  <option value="9">       G#/Ab</option>
-  <option value="10">      A</option>
-  <option value="11">      A#/Bb</option>
-  <option value="12">      B</option>
-</select>
-<select id="SELECT_SCALEKEYTYPE">
-  <option value="Major">       Major</option>
-  <option value="Minor">       Minor</option>
-</select>
+
 
 <span style="display:none">and Degree:</span>
 <select id="SELECT_CHORDDEGREE" style="display:none">
@@ -107,14 +230,11 @@ Select Root:
 
 <div class="maindivInner"id="maindivInner_CHORDPANEL">
 
-<div class="instrumentPanel" id="instrumentPanel_0">
 
 </div>
 
 </div>
-
 </div>
-
 
 <script type="text/javascript" src="util.js"></script>
 <script type="text/javascript" src="ui.js"></script>

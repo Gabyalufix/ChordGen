@@ -457,6 +457,7 @@ function calculateChords(){
   for( var iidx = 0; iidx < activeInstrumentList.length; iidx++){
       var currInst = activeInstrumentList[iidx];
       var stringElem = currInst.stringBoardList;
+      //console.log("currInst:"); console.log(currInst);
       for( var sidx = 0; sidx < stringElem.length; sidx++){
         var selem = stringElem[sidx];
         var stringChildren = selem.children;
@@ -495,6 +496,34 @@ function calculateChords(){
         }
       }
   }
+  
+  var pianoKeys = document.getElementsByClassName("PIANO_KEY");
+  for( var nidx = 0; nidx < pianoKeys.length; nidx++){
+    var fiix = nidx % 12;
+    var pk = pianoKeys[nidx];
+    console.log("nidx: "+nidx+" / "+pk);
+    if( chordIIX.includes( fiix ) ){
+        pk.classList.remove("PIANO_INACTIVE");
+        pk.classList.add("PIANO_ACTIVEKEY");
+        if(scaleIIX.includes(fiix) ){
+          pk.classList.remove("PIANO_ACCIDENTAL");
+        } else {
+          pk.classList.add("PIANO_ACCIDENTAL");
+        }
+    } else if( scaleIIX.includes(fiix) ){
+        pk.classList.add("PIANO_INACTIVE");
+        pk.classList.remove("PIANO_ACCIDENTAL");
+        pk.classList.remove("PIANO_ACTIVEKEY");
+    } else {
+        pk.classList.add("PIANO_INACTIVE");
+        pk.classList.remove("PIANO_ACTIVEKEY");
+        pk.classList.add("PIANO_ACCIDENTAL");
+
+    }
+  }
+  
+  
+  
   setupChordSynon();
   
 }
@@ -843,8 +872,13 @@ function addValuesToSelect(selector,valueList){
   }
 }
 
+
+var activeInstruments = []
+
 function addInstrument( instrumentID , initialInstrument ){
-    var ipanel = document.getElementById("instrumentPanel_"+instrumentID)
+    console.log("--------------- adding instrument: " +instrumentID);
+    var ipanel = document.createElement("div")
+    ipanel.id = "instrumentPanel_"+instrumentID
     ipanel.classList.add("instrumentPanel")
     var activeInstruments = [ipanel]
 
@@ -868,14 +902,13 @@ function addInstrument( instrumentID , initialInstrument ){
     ipanel.appendChild(iselect);
     ipanel.appendChild(ipanel.fretBoard);
     ipanel.setInstrument();
+    activeInstruments.push(ipanel);
+    //document.getElementById("maindivInner_CHORDPANEL").appendChild( ipanel )
+    document.getElementById("maindiv").appendChild( ipanel )
     
 }
 
 console.log("Creating panels, etc...")
-
-var ipanel0 = document.getElementById("instrumentPanel_0")
-ipanel0.classList.add("instrumentPanel")
-var activeInstruments = [ipanel0]
 
 INSTRUMENTS_IDLIST = [
  ["MANDOLIN","Mandolin"],
@@ -934,3 +967,22 @@ console.log("Setting other chords:")
 
 setupOtherChords();
 
+document.getElementById("ADD_INSTRUMENT_BUTTON").selector = document.getElementById("INSTRUMENT_SELECT_ADD")
+document.getElementById("ADD_INSTRUMENT_BUTTON").onclick = function(){
+  addInstrument( activeInstruments.length+"" , this.selector.value )
+}
+
+document.getElementById("ShowPiano").onchange = function(){
+  if(this.checked){
+    document.getElementById("PIANO_KEYBOARD_SUPER").style.display = "block";
+  } else {
+    document.getElementById("PIANO_KEYBOARD_SUPER").style.display = "none";
+  }
+}
+document.getElementById("ShowStaff").onchange = function(){
+  if(this.checked){
+    document.getElementById("STAFF_HOLDER").style.display = "block";
+  } else {
+    document.getElementById("STAFF_HOLDER").style.display = "none";
+  }
+}
