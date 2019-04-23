@@ -20,6 +20,20 @@ NOTE_NAMES_FLAT  = ["C","Db","D","Eb",
                     "E","F","Gb","G",
                     "Ab","A","Bb","B"]
 
+KEYROOT_NAMES = [
+  "C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"
+]
+KEYROOT_NAMES_WITHALTS = [
+  "C",["Db","C#"],"D","Eb","E","F",["Gb","F#"],"G","Ab","A","Bb",["B","Cb"]
+]
+KEYROOT_NAMES_FLATS = [
+  "F","Db","Eb","Gb","Ab","Bb"
+]
+KEYROOT_IIX_FLATS = [
+  1,3,5,6,8,10
+]
+
+
 CURRENT_SCALE_SHARPTYPE = "sharp";
 
 KEY_TYPE_INTERVALS = {
@@ -182,6 +196,22 @@ CHORDNOTE_INTERVALS = {
   "4":5,
   "m6":8
 }
+
+REV_CHORDNOTE_INTERVALS = {
+  0:"R",
+  1:"b2",
+  2:"2",
+  3:"m3",
+  4:"3",
+  5:"4",
+  6:"m5",
+  7:"5",
+  8:  "#5",
+  9:  "6",
+  10: "m7",
+  11: "7"
+}
+
 //  "6/9":[2,2,3,2],
 
 
@@ -310,13 +340,16 @@ function getNoteIIX(noteName){
   return iix;
 }
 
+var CURRENT_SCALE = 0;
+//var CURRENT_SCALE_SHARPTYPE = "sharp";
+
 function getCurrentScale(){
-  var currentScale = (document.getElementById("SELECT_SCALEKEY").value);
+  var currentScale = CURRENT_SCALE;
   console.log("currentScale: "+currentScale);
   var currentScaleType = document.getElementById("SELECT_SCALEKEYTYPE").value;
   console.log("currentScaleType: "+currentScaleType);
   var intervals = KEY_TYPE_INTERVALS[ currentScaleType ];
-  var rootIIX = parseInt(currentScale)-1;
+  var rootIIX = currentScale;
   return {rootIIX:rootIIX, scaleType:currentScaleType,intervals:intervals}
 }
 
@@ -343,6 +376,87 @@ function getChordNotes(chordRootIIX,chordType){
   return chordIIX;
 }
 
+
+function copyChordButton(cb){
+            var cb2 = document.createElement("button");
+            Array.prototype.map.call(cb.classList, x => cb2.classList.add(x) );
+            cb2.textContent = cb.chordTitleString;
+            cb2.classList.add("STATICSIZE");
+            //cb2.textContent = cb.textContent
+            cb2.chordString = cb.chordString;
+            cb2.chordRootIIX = cb.chordRootIIX ;
+            cb2.chordTitleString = cb.chordTitleString;
+            cb2.chordType    = cb.chordType;
+            cb2.aa_posDesc = cb.aa_posDesc;
+            cb2.onclick = selectChord;
+            if( cb2.chordRootIIX == CURRENT_CHORDROOT_IIX && cb2.chordType == CURRENT_CHORDTYPE ){
+              cb2.classList.add("CHORD_BUTTON_SELECTED")
+            }
+            if(typeof cb.diffIIX === "undefined"){
+               //do nothing
+            } else {
+               cb2.diffIIX = cb.diffIIX;
+            }
+            
+            return cb2;
+}
+
+function getChordDiff(rootA,typeA, rootB, typeB){
+    // A< B
+    var addElems = [];
+    if(rootA == rootB){
+         var elemsA   = CHORD_TYPE_DEF[typeA];
+         var elemsB = CHORD_TYPE_DEF[typeB];
+         var cixA     = elemsA.map( x => CHORDNOTE_INTERVALS[x] % 12 );
+         var cixB     = elemsB.map( x => CHORDNOTE_INTERVALS[x] % 12 );
+         for(var i=0; i < cixB.length; i++){
+           if( (! elemsA.includes(elemsB[i])) && ( ! cixA.includes(cixB[i]) ) ){
+             //console.log("   ADDED!")
+             addElems.push(elemsB[i]);
+           }
+         }
+    } else {
+      var iixA     = CHORD_TYPE_DEF[typeA].map( x => (CHORDNOTE_INTERVALS[x] + rootA) % 12 );
+      var iixB     = CHORD_TYPE_DEF[typeB].map( x => (CHORDNOTE_INTERVALS[x] + rootB) % 12 );
+         for(var i=0; i < iixB.length; i++){
+           if( ( ! iixA.includes(iixB[i]) ) ){
+             var cix = (iixB[i]+24 - rootA) % 12;
+             //REV_CHORDNOTE_INTERVALS
+             addElems.push(REV_CHORDNOTE_INTERVALS[cix]);
+           }
+         }
+    }
+    return addElems;
+}
+
+function addSupMarker(cb){
+       var addElems = getChordDiff( CURRENT_CHORDROOT_IIX, CURRENT_CHORDTYPE, cb.chordRootIIX, cb.chordType);
+       //cb.diffIIX
+       //console.log( addElems )
+       var arrow = document.createElement("div");
+       arrow.classList.add("CHORD_BUTTON_UPARROW");
+       arrow.textContent = "+" + addElems.join("+");
+       cb.appendChild(arrow);
+}
+function addSubMarker(cb){
+       var addElems = getChordDiff(  cb.chordRootIIX, cb.chordType, CURRENT_CHORDROOT_IIX, CURRENT_CHORDTYPE);
+       //cb.diffIIX
+       //console.log( addElems )
+       var arrow = document.createElement("div");
+       arrow.classList.add("CHORD_BUTTON_DNARROW");
+       arrow.textContent = "-" + addElems.join("-");
+       cb.appendChild(arrow);
+}
+
+
+
+function dropFromArray(aa,elem){
+  var ix = aa.indexOf(elem);
+  if(ix > -1){
+    aa.splice(ix,1);
+  }
+}
+
 function setupChordSynon(){
   var chordRoot = CURRENT_CHORDROOT_IIX;
   var chordType = CURRENT_CHORDTYPE;
@@ -352,8 +466,16 @@ function setupChordSynon(){
   
   var panelsetset = document.getElementsByClassName("CHORD_PANELSET");
   
+  var synChordElem = [];
+  var supChordElem = [];
+  var subChordElem = [];
+  
+  
+  
   for(var pss = 0; pss < panelsetset.length; pss++){
       panelset = panelsetset[pss];
+      var isFullSet = (panelset.id == "CHORD_PANELSET");
+      console.log("pss.id = "+panelset.id + " / "+isFullSet); 
       for( var i=0; i < panelset.panels.length; i++){
           var panel = panelset.panels[i];
           for(var j=0; j < panel.chordElems.length; j++){
@@ -363,6 +485,7 @@ function setupChordSynon(){
               var isMatch = true;
               var isSub = false;
               var isSuper = false;
+              var diffIIX = [];
               if(currChordNotes.length == chordNotes.length){
                   for(var k =0; k < chordNotes.length; k++){
                       if(currChordNotes[k] != chordNotes[k]){
@@ -373,7 +496,9 @@ function setupChordSynon(){
               } else if(currChordNotes.length > chordNotes.length){
                   isMatch = false;
                   isSuper = true;
+                  diffIIX = currChordNotes.slice();
                   for(var k =0; k < chordNotes.length; k++){
+                      dropFromArray(diffIIX,chordNotes[k]);
                       if(! currChordNotes.includes(chordNotes[k])){
                           isSuper = false;
                           break;
@@ -382,7 +507,9 @@ function setupChordSynon(){
               } else {
                   isMatch = false;
                   isSub = true;
+                  diffIIX = chordNotes.slice();
                   for(var k =0; k < currChordNotes.length; k++){
+                      dropFromArray(diffIIX,currChordNotes[k]);
                       if(! chordNotes.includes(currChordNotes[k])){
                           isSub = false;
                           break;
@@ -391,6 +518,9 @@ function setupChordSynon(){
               }
               if(isMatch){
                   cb.classList.add("CHORD_BUTTON_SYNON")
+                  if(isFullSet){
+                    synChordElem.push( copyChordButton(cb) );
+                  }
               } else {
                   cb.classList.remove("CHORD_BUTTON_SYNON")
               }
@@ -398,21 +528,59 @@ function setupChordSynon(){
                  cb.removeChild(cb.firstElementChild);
               }
               if(isSuper){
-                  var arrow = document.createElement("div");
-                  arrow.classList.add("CHORD_BUTTON_UPARROW");
-                  arrow.textContent = "+";
-                  cb.appendChild(arrow);
+                  //var arrow = document.createElement("button");
+                  //arrow.classList.add("CHORD_BUTTON_UPARROW");
+                  //arrow.textContent = "+";
+                  //cb.appendChild(arrow);
+                  cb.diffIIX = diffIIX;
+                  addSupMarker(cb);
+                  if(isFullSet){
+                    supChordElem.push( copyChordButton(cb) );
+                  }
               }
               if(isSub){
-                  var arrow = document.createElement("div");
-                  arrow.classList.add("CHORD_BUTTON_DNARROW");
-                  arrow.textContent = "-";
-                  cb.appendChild(arrow);
+                  var arrow = document.createElement("button");
+                  //arrow.classList.add("CHORD_BUTTON_DNARROW");
+                  //arrow.textContent = "-";
+                  //cb.appendChild(arrow);
+                  //cb.diffIIX = diffIIX;
+                  addSubMarker(cb);
+                  if(isFullSet){
+                  subChordElem.push( copyChordButton(cb) );
+                  }
               }
           }
       }
   }
+  var relChordPanel = document.getElementById("RELCHORD_PANELSET");
+  var listSoFar = [];
+  relChordPanel.innerHTML = "";
+  for(var ii = 0; ii < synChordElem.length; ii++){
+    var cc2 = synChordElem[ii]
+    if(! listSoFar.includes(cc2.chordString)){
+      relChordPanel.appendChild( cc2);
+      listSoFar.push( cc2.chordString );
+    }
+  }
+  for(var ii = 0; ii < supChordElem.length; ii++){
+    var cc2 = supChordElem[ii]
+    if(! listSoFar.includes(cc2.chordString)){
+      relChordPanel.appendChild( cc2);
+      listSoFar.push( cc2.chordString );
+      addSupMarker(cc2);
+    }
+  }
+  for(var ii = 0; ii < subChordElem.length; ii++){
+    var cc2 = subChordElem[ii]
+    if(! listSoFar.includes(cc2.chordString)){
+      relChordPanel.appendChild( cc2);
+      listSoFar.push( cc2.chordString );
+      addSubMarker(cc2);
+    }
+  }
 }
+
+
 function calculateChords(){
   var currScale = getCurrentScale()
   var currentScaleType = currScale.scaleType;
@@ -438,9 +606,11 @@ function calculateChords(){
   
   var chordRelNotes = CHORD_TYPE_DEF[chordType];
   var chordIIX = [];
+  var chordRIX = [];
   for(var i=0; i < chordRelNotes.length; i++){
       relNote = CHORDNOTE_INTERVALS[ chordRelNotes[i]];
       chordIIX.push( (relNote + chordRoot) % 12 );
+      chordRIX.push( (relNote + chordRoot) );
   }
   
   //var chordIntervals = CHORD_TYPE_INTERVALS[chordType];
@@ -522,15 +692,38 @@ function calculateChords(){
     }
   }
   
+  var staffHolder = document.getElementById("STAFF_HOLDER");
+  var staffHolderArray = Array.prototype.map.call(staffHolder.getElementsByClassName("STAFF_NOTE"),
+                           x => x );
+  Array.prototype.map.call(staffHolderArray,
+                           x => x.parentNode.removeChild(x) );
   
+  chordRIX.map( rix => addNote(rix) );
   
   setupChordSynon();
   
 }
+var STAFF_HOLDER = document.getElementById("STAFF_HOLDER");
+var STAVES = STAFF_HOLDER.getElementsByClassName("STAFF_LINE")
 
-
-
-
+function addNote( fiix, octave = 4){
+  
+  if(octave == 4){
+    var lineNum = Math.floor((fiix + 1) / 2);
+    var isUp    = (fiix + 1) % 2 == 1;
+    console.log("adding note: "+fiix + " / "+lineNum+" / "+isUp);
+    if(isUp){
+      var ee = document.createElement("div");
+      ee.classList.add("STAFF_NOTE");
+      ee.classList.add("UP");
+      STAVES[lineNum].appendChild(ee);
+    } else {
+      var ee = document.createElement("div");
+      ee.classList.add("STAFF_NOTE");
+      STAVES[lineNum].appendChild(ee);
+    }
+  }
+}
 
 function getNoteSelector(){
   //NOTE_NAMES_GENERAL
@@ -767,6 +960,7 @@ function setupScaleChords(){
             var cb = document.createElement("button");
             cb.classList.add("CHORD_BUTTON");
             cb.textContent = chordRootID + getChordTypeString(chordType);
+            cb.chordTitleString = chordRootID + getChordTypeString(chordType);
             cb.chordString = chordRootID + chordType;
             cb.chordRootIIX = chordRootIIX;
             cb.chordType    = chordType;
@@ -840,6 +1034,7 @@ function setupOtherChords(){
           cb.chordString = chordRootID + chordType;
           cb.chordRootIIX = chordRootIIX;
           cb.chordType    = chordType;
+          cb.chordTitleString = chordRootID + getChordTypeString(chordType);
           panel.chordElems.push(cb);
           var inKey = isChordInKey(chordRootIIX,chordType,scaleIIX);
           if(! inKey){
@@ -986,3 +1181,69 @@ document.getElementById("ShowStaff").onchange = function(){
     document.getElementById("STAFF_HOLDER").style.display = "none";
   }
 }
+
+/*
+KEYROOT_NAMES_WITHALTS = [
+  "C",["Db","C#"],"D","Eb","E","F",["Gb","F#"],"G","Ab","A","Bb",["B","Cb"]
+]
+*/
+
+var KEY_SELECT_PANEL = document.getElementById("KEY_SELECT_PANEL");
+
+var KEY_SELECT_BUTTONS = KEY_SELECT_PANEL.getElementsByClassName("KEY_BUTTON");
+var KEY_SELECT_BUTTONS_FIIX = [1,3,6,8,10,0,2,4,5,7,9,11];
+var KEY_SELECT_BUTTONS_HASVARIANT = [false,true,false,false,false,false,true,false,false,false,false,false]; 
+var KEY_SELECT_BUTTONS_ISVARIANT = [false,false,false,false,false,false,false,false,false,false,false,false]; 
+for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
+  var fiix = KEY_SELECT_BUTTONS_FIIX[i]
+  KEY_SELECT_BUTTONS[i].FIIX = fiix
+  KEY_SELECT_BUTTONS[i].HASVARIANT = KEY_SELECT_BUTTONS_HASVARIANT[fiix]
+  KEY_SELECT_BUTTONS[i].ISVARIANT = KEY_SELECT_BUTTONS_ISVARIANT[fiix]
+  KEY_SELECT_BUTTONS[i].keyNames = KEYROOT_NAMES_WITHALTS[ fiix ]
+
+}
+
+//var CURRENT_SCALE = 0;
+//var CURRENT_SCALE_SHARPTYPE = "sharp";
+function KEY_SELECT_BUTTON_ONCLICK(){
+  CURRENT_SCALE = this.FIIX;
+  if(this.classList.contains("KEY_BUTTON_SELECTED")){
+    console.log("doubleclick!");
+    if(this.HASVARIANT){
+      console.log("doubleclick HV!");
+      this.ISVARIANT = ! this.ISVARIANT
+      if(this.ISVARIANT){
+        console.log("doubleclick HVS!");
+        this.textContent = this.keyNames[1] + "/" + this.keyNames[0];
+        CURRENT_SCALE_SHARPTYPE = "sharp"
+        
+      } else {
+        console.log("doubleclick HVF!");
+        this.textContent = this.keyNames[0] + "/" + this.keyNames[1];
+        CURRENT_SCALE_SHARPTYPE = "flat"
+      }
+    }
+  } else {
+    for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
+      KEY_SELECT_BUTTONS[i].classList.remove("KEY_BUTTON_SELECTED");
+    }
+    this.classList.add("KEY_BUTTON_SELECTED");
+    if( this.HASVARIANT) {
+      if(this.ISVARIANT){
+        CURRENT_SCALE_SHARPTYPE = "sharp"
+      } else {
+        CURRENT_SCALE_SHARPTYPE = "flat"
+      }
+    } else if(KEYROOT_IIX_FLATS.includes(this.FIIX)) {
+      CURRENT_SCALE_SHARPTYPE = "flat"
+    } else {
+      CURRENT_SCALE_SHARPTYPE = "sharp"
+    }
+  }
+  setupScaleChords();
+}
+for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
+  KEY_SELECT_BUTTONS[i].onclick = KEY_SELECT_BUTTON_ONCLICK
+
+}
+

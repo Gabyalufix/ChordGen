@@ -34,7 +34,7 @@ Instrument:
 </button>
 <br>
 <span>Select scale:</span>
-<select id="SELECT_SCALEKEY">
+<select id="SELECT_SCALEKEY" style="display:none">
   <option value="1">       C</option>
   <option value="2">       C#/Db</option>
   <option value="3">       D</option>
@@ -48,13 +48,38 @@ Instrument:
   <option value="11">      A#/Bb</option>
   <option value="12">      B</option>
 </select>
+
+
+<label><input type="checkbox" id="ShowPiano" name="ShowPiano" value="value" checked="true">Show Piano</label>
+<label><input type="checkbox" id="ShowStaff" name="ShowStaff" value="value" checked="true">Show Staff</label>
+
+
+<div id="KEY_SELECT_PANEL">
+
+<div class="KEY_BUTTON_HALFBUFFER"></div>
+<button class="KEY_BUTTON"> Db/C# </button>
+<button class="KEY_BUTTON"> Eb</button>
+<div class="KEY_BUTTON_BUFFER"></div>
+<button class="KEY_BUTTON"> Gb/F# </button>
+<button class="KEY_BUTTON"> Ab </button>
+<button class="KEY_BUTTON"> Bb </button>
+<div class="KEY_BUTTON_HALFBUFFER"></div>
+
+<button class="KEY_BUTTON KEY_BUTTON_SELECTED">C</button>
+<button class="KEY_BUTTON">D</button>
+<button class="KEY_BUTTON">E</button>
+<button class="KEY_BUTTON">F</button>
+<button class="KEY_BUTTON">G</button>
+<button class="KEY_BUTTON">A</button>
+<button class="KEY_BUTTON">B/Cb</button>
+
 <select id="SELECT_SCALEKEYTYPE">
   <option value="Major">       Major</option>
   <option value="Minor">       Minor</option>
 </select>
 
-<label><input type="checkbox" id="ShowPiano" name="ShowPiano" value="value" checked="true">Show Piano</label>
-<label><input type="checkbox" id="ShowStaff" name="ShowStaff" value="value" checked="true">Show Staff</label>
+</div>
+
 
 </div>
 
@@ -155,11 +180,12 @@ Instrument:
 
 <div  id="STAFF_HOLDER" class="STAFF_HOLDER">
 
-<div class="STAFF_LINE STAFF_LINE_1"></div>
-<div class="STAFF_LINE STAFF_LINE_2"></div>
-<div class="STAFF_LINE STAFF_LINE_3"></div>
-<div class="STAFF_LINE STAFF_LINE_4"></div>
-<div class="STAFF_LINE STAFF_LINE_5"></div>
+<div id="STAFF_LINE_M1" class="STAFF_LINE STAFF_LINE_M1 INVIS"></div>
+<div id="STAFF_LINE_1" class="STAFF_LINE STAFF_LINE_1"><div class="STAFF_NOTE UP"></div></div>
+<div id="STAFF_LINE_2" class="STAFF_LINE STAFF_LINE_2"></div>
+<div id="STAFF_LINE_3" class="STAFF_LINE STAFF_LINE_3"><div class="STAFF_NOTE MID"></div><div class="STAFF_NOTE UP"></div></div>
+<div id="STAFF_LINE_4" class="STAFF_LINE STAFF_LINE_4"><div class="STAFF_NOTE MID"></div></div>
+<div id="STAFF_LINE_5" class="STAFF_LINE STAFF_LINE_5"></div>
 
 
 </div>
@@ -170,6 +196,8 @@ Instrument:
 
 <div id="maindiv" class="maindiv">
 <div class="maindivInner"id="maindivInner_CONTROLPANEL">
+
+<br>
 
 <div style="display:none">
 <input type="radio" name="chordSelectMode" value="RootType" style="display:none">
@@ -217,6 +245,12 @@ Select Root:
 
 <h3>Common Chords:</h3>
 <div class="CHORD_PANELSET" id="CHORD_PANELSET0">
+
+</div>
+
+<br>
+<h3>Related Chords:</h3>
+<div class="RELCHORD_PANEL" id="RELCHORD_PANELSET">
 
 </div>
 

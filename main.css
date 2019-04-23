@@ -352,6 +352,20 @@ h5 {
   
 }
 
+.RELCHORD_PANEL{
+  width: 420px;
+  max-width: 50vw;
+  background-color: var(--MID);
+  border-style: solid solid solid solid;
+  border-color: var(--black);
+  border-width: 1px;
+  border-radius: 2px ;
+  display: flex;
+  flex-wrap:  wrap;
+  margin: 0px 4px;
+  padding: 0px 4px;
+}
+
 .CHORD_PANELSET{
   width: 420px;
   max-width: 50vw;
@@ -366,7 +380,6 @@ h5 {
   padding: 0px 4px;
 }
 
-
 .CHORD_BUTTON{
   border: 0.5px dotted var(--DK1);
   padding: 2px;
@@ -378,6 +391,11 @@ h5 {
   grid-area: span 1 / span 1;
   color: var(--black);
 }
+.CHORD_BUTTON.STATICSIZE{
+  width: 70px;
+  height: 40px;
+}
+
 .CHORD_BUTTON_INKEY{
   color: var(--black);
   background-color: var(--LT2);
@@ -399,20 +417,25 @@ h5 {
 .CHORD_BUTTON_UPARROW {
   position: absolute;
   top: 0px;
-  right: 0px;
-  transform: translate(-85%, 0%);
+  right: 3px;
   height: 10px;
-  width:  10px;
   color: var(--subduedWarnGreen);
+  background-color: transparent;
+  border-style: none;
+  text-align: right;
+  font-size: 8px;
 }
 .CHORD_BUTTON_DNARROW {
   position: absolute;
   bottom: 4px;
-  right: 4px;
+  right: 3px;
   height: 10px;
-  width:  10px;
   font-size: larger;
   color: var(--subduedWarnRed);
+  background-color: transparent;
+  border-style: none;
+  font-size: 8px;
+  text-align: right;
 }
 /*
 .CHORD_BUTTON_UPARROW {
@@ -522,7 +545,6 @@ h5 {
 	line-height: 15px;
 	background-color: white;
 }
-
 /*
 .PIANO_ACTIVEKEY {
 	background-color: white;
@@ -598,18 +620,123 @@ h5 {
     border-top-style: none;
 	width: 160px;
 }
-.STAFF_LINE_1 {
+.STAFF_LINE.INVIS {
+    border-bottom-style: none;
+}
+#STAFF_LINE_M2 {
+	height: 84px;
+}
+#STAFF_LINE_M1 {
+	height: 72px;
+}
+#STAFF_LINE_1 {
 	height: 60px;
 }
-.STAFF_LINE_2 {
+#STAFF_LINE_2 {
 	height: 48px;
 }
-.STAFF_LINE_3 {
+#STAFF_LINE_3 {
 	height: 36px;
 }
-.STAFF_LINE_4 {
+#STAFF_LINE_4 {
 	height: 24px;
 }
-.STAFF_LINE_5 {
+#STAFF_LINE_5 {
 	height: 12px;
+}
+
+
+.STAFF_NOTE {
+	position: absolute;
+	left: 50px;
+	height: 10px;
+	width: 11px;
+	border: 4px solid black;
+	/*background-color: black;*/
+	border-radius: 15px;
+    box-sizing: border-box;	
+}
+.STAFF_NOTE.MID {
+	bottom: 1px;
+}
+.STAFF_NOTE.UP {
+	bottom: 7px;
+}
+
+
+.STAFF_NOTE ~ .STAFF_NOTE {
+	left: 60px;
+}
+
+
+
+#KEY_SELECT_PANEL {
+  width: 290px;
+  height: 75px;
+  background-color: var(--MID);
+  display: grid;
+  grid-template-columns: repeat(14, 20px);;
+  grid-column-gap: 0px;
+  grid-auto-flow: row;
+  grid-template-rows: auto auto auto;
+  margin: 0px;
+  padding: 6px 6px;
+  font-size: 12px;
+}
+.KEY_BUTTON{
+  width: 40px;
+  height: 20px;
+  border: 0.5px dotted var(--DK1);
+  padding: 2px;
+  font-family: Monospace;
+  font-weight: bold;
+  background-color: var(--LT3);
+  border-style: dotted;
+  position: relative;
+  grid-area: span 1 / span 2;
+  color: var(--black);
+  margin: 0px 0px;
+  font-size: 12px;
+  box-sizing: content-box;
+}
+
+.KEY_BUTTON_SELECTED {
+  border: 1px dotted var(--LT4);
+  background-color: var(--DK3);
+  color: var(--white);
+}
+
+.KEY_BUTTON_BUFFER{
+  width: 40px;
+  height: 20px;
+  border: 0.5px dotted var(--DK1);
+  padding: 2px;
+  font-family: Monospace;
+  font-weight: bold;
+  background-color: var(--MID);
+  border-style: none;
+  position: relative;
+  grid-area: span 1 / span 2;
+  color: var(--black);
+  margin: 0px 0px;
+
+}
+.KEY_BUTTON_HALFBUFFER{
+  width: 20px;
+  height: 20px;
+  border: 0.5px dotted var(--DK1);
+  padding: 2px;
+  font-family: Monospace;
+  font-weight: bold;
+  background-color: var(--MID);
+  border-style: none;
+  position: relative;
+  grid-area: span 1 / span 1;
+  color: var(--black);
+  margin: 0px 0px;
+
+}
+#SELECT_SCALEKEYTYPE{
+	width: 100%;
+	grid-area: span 1 / span 14;
 }
