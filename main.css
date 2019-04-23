@@ -504,6 +504,14 @@ h5 {
 .PIANO_KEY {
     vertical-align: bottom;
 	font-size: 10px;
+background: repeating-linear-gradient(
+  45deg,
+  #FFFFFF,
+  #FFFFFF 4px,
+  #000000 4px,
+  #000000 5px,
+  #FFFFFF 5px
+);
 }
 .PIANO_KEYLABEL {
 	display: block;
