@@ -239,6 +239,29 @@ h5 {
 }
 
 .fretNote {
+  width: 15px;
+  height: 15px;
+  border-style: dotted;
+  border-color: var(--black);
+  border-width: 1px;
+  border-radius: 15px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  background-color: var(--DK4);
+  text-align: center;
+  line-height: 10px;
+  font-size: 6px;
+  color: transparent;
+  opacity: 0;
+  box-sizing: content-box;
+  padding: 0px;
+}
+
+.chordFretNote {
   width: 30px;
   height: 30px;
   border-style: solid;
@@ -255,24 +278,30 @@ h5 {
   color: var(--LT4);
   text-align: center;
   line-height: 30px;
-  text-size: 10px;
+  font-size: 10px;
+  opacity: 1;
+
 }
 .fretNoteOffKey {
   border-color: var(--subduedWarnRed);
   border-width: 2.5px;
+  opacity: 1;
+
 }
 .smallFretNote {
   width: 15px;
   height: 15px;
-  border-style: solid;
-  border-color: var(--LT4);
+  border-style: dotted;
+  border-color: var(--DK4);
   border-width: 1px;
   border-radius: 15px;
   background-color: var(--LT4);
   text-align: center;
   line-height: 15px;
   font-size: 10px;
-  color: var(--LT1);  
+  color: var(--LT1); 
+  opacity: 1;
+
 }
 .labelledFretNote {
   width: 30px;
@@ -290,6 +319,8 @@ h5 {
   text-align: center;
   line-height: 30px;
   font-size: 16px;
+  opacity: 1;
+  
 }
 .chordNoteLabel {
   display: none;
@@ -687,6 +718,12 @@ h5 {
 	position: absolute;
 	left: 10px;
     bottom: -5px;
+	font-size: 8px;
+}
+.STAFF_LABEL_MID {
+	position: absolute;
+	left: 17px;
+    bottom: 0px;
 	font-size: 8px;
 }
 .STAFF_NOTE_MODLABEL {

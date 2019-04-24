@@ -675,6 +675,7 @@ function calculateChords(){
               fretNote.style.display = "block";
               //fretNote.textContent = getNoteName(fiix);
               fretNote.classList.remove("smallFretNote");
+              fretNote.classList.remove("chordFretNote");
               fretNote.classList.add("labelledFretNote");
               if(scaleIIX.includes(fiix)){
                   fretNote.classList.remove("fretNoteOffKey");
@@ -687,9 +688,17 @@ function calculateChords(){
               //fretNote.textContent = getNoteName(fiix);
               fretNote.classList.add("smallFretNote");
               fretNote.classList.remove("labelledFretNote");
+              fretNote.classList.remove("fretNoteOffKey");
+              fretNote.classList.remove("chordFretNote");
             } else {
               fretLabel.style.display = "none";
-              fretNote.style.display = "none";
+              //fretNote.style.display = "none";
+              fretNote.classList.remove("chordFretNote");
+              fretNote.classList.remove("fretNoteOffKey");
+              fretNote.classList.remove("smallFretNote");
+              fretNote.classList.remove("labelledFretNote");
+
+              
             }
             fiix = (fiix + 1) % 12;
           }
@@ -812,7 +821,7 @@ function setInstrument(){
     for(var j=0; j < spacing.length; j++){
       //console.log(" j = "+j);
       var fb = document.createElement("div");
-      var fn = document.createElement("div");
+      var fn = document.createElement("button");
       var noteLabel = document.createElement("div");
       fb.classList.add("fret");
       fn.classList.add("fretNote");
