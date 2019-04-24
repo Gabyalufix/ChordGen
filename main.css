@@ -533,22 +533,29 @@ h5 {
 .TOP_SECTION {
 	display: flex;
 	flex-wrap: wrap;
-}
 
+}
+/*
+	pointer-events: none;
+
+*/
 .PIANO_KEYBLOCK{
 	position: relative;
 	top: 0px;
 	left: 0px;
 	height: 160px;
 	width: 25px;
-	pointer-events: none;
 }
 .PIANO_CHORDINFO {
-	position: absolute;
-	top: 120px;
+	position: relative;
+	top: 0px;
         left: 0px;
         height: 40px;
         padding: 3px;
+        border: 1px solid var(--DK4);
+        background-color: var(--LT3);
+        border-radius: 5px;
+        margin: 0px 10px;
 }
 .PIANO_WHITEKEY {
 	position: absolute;
@@ -584,15 +591,19 @@ h5 {
 }
 .PIANO_KEYBOARD_SUPER {
 	display: flex;
+
 }
 .PIANO_KEYBOARD {
 	display: flex;
 	position: relative;
+
 }
 
 .PIANO_KEY {
     vertical-align: bottom;
 	font-size: 10px;
+  box-sizing: content-box;
+  padding: 0px;
 }
 .PIANO_KEYLABEL {
 	display: block;
@@ -610,6 +621,8 @@ h5 {
 	vertical-align: middle;
 	line-height: 15px;
 	background-color: white;
+	pointer-events: none;
+
 }
 /*
 .PIANO_ACTIVEKEY {
@@ -662,6 +675,7 @@ h5 {
 	background-color: var(--LT4);
 	border: 1px solid var(--DK4);
 	padding: 10px;
+	z-index: 50;
 }
 
 .STAFF_HOLDER{

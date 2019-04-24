@@ -126,7 +126,7 @@ CHORD_TYPE_INTERVALS = {
   "7sus2":[2,5,3],
   "9sus4":[5,2,3,4]
 }
-
+//CHORD_TYPE_LIST
 CHORD_TYPE_DEF = {
   "M":["R","3","5"],
   "m":["R","m3","5"],
@@ -346,6 +346,8 @@ FRETBOARD_LENGTH = 800;
 
 CURRENT_CHORDROOT_IIX = 0;
 CURRENT_CHORDTYPE     = "M";
+CURRENT_CHORDINTERVALS = CHORD_TYPE_DEF[CURRENT_CHORDTYPE];
+
 function selectChord(){
   var allButtons = document.getElementsByClassName("CHORD_BUTTON");
   for(var i=0; i < allButtons.length; i++){
@@ -354,6 +356,11 @@ function selectChord(){
   this.classList.add("CHORD_BUTTON_SELECTED");
   CURRENT_CHORDROOT_IIX = this.chordRootIIX;
   CURRENT_CHORDTYPE = this.chordType;
+  CURRENT_CHORDINTERVALS = CHORD_TYPE_DEF[CURRENT_CHORDTYPE];
+  Array.prototype.map.call(document.getElementsByClassName("fretNote"), fnn => {
+                      fnn.classList.remove("fretNoteUnselected");
+                      fnn.classList.remove("fretNoteSelected");
+  })
   calculateChords()
 }
 
@@ -414,8 +421,8 @@ function getScaleIIX(intervals,rootIIX){
   return scaleIIX;
 }
 
-function getChordNotes(chordRootIIX,chordType){
-  var chordRelNotes = CHORD_TYPE_DEF[chordType];
+function getChordNotes(chordRootIIX,chordRelNotes){
+  //var chordRelNotes = CHORD_TYPE_DEF[chordType];
   var chordIIX = [];
   for(var i=0; i < chordRelNotes.length; i++){
       relNote = CHORDNOTE_INTERVALS[ chordRelNotes[i]];
@@ -470,8 +477,8 @@ CHORDSET_OPTIONS = [
     ["7sus4","7sus2"]
 ]
 
-function isChordInKey(chordRootIIX,chordType,scaleIIX){
-    var chordRelNotes = CHORD_TYPE_DEF[chordType];
+function isChordInKey(chordRootIIX,chordRelNotes,scaleIIX){
+   // var chordRelNotes = CURRENT_CHORDINTERVALS //CHORD_TYPE_DEF[chordType];
     var inKey = true;
     for(var z=0; z < chordRelNotes.length; z++){
             relNote = CHORDNOTE_INTERVALS[ chordRelNotes[z]];
@@ -520,12 +527,11 @@ function copyChordButton(cb){
             return cb2;
 }
 
-function getChordDiff(rootA,typeA, rootB, typeB){
+function getChordDiff(rootA, elemsA, rootB, elemsB){
     // A< B
     var addElems = [];
+    
     if(rootA == rootB){
-         var elemsA   = CHORD_TYPE_DEF[typeA];
-         var elemsB = CHORD_TYPE_DEF[typeB];
          var cixA     = elemsA.map( x => CHORDNOTE_INTERVALS[x] % 12 );
          var cixB     = elemsB.map( x => CHORDNOTE_INTERVALS[x] % 12 );
          for(var i=0; i < cixB.length; i++){
@@ -535,8 +541,8 @@ function getChordDiff(rootA,typeA, rootB, typeB){
            }
          }
     } else {
-      var iixA     = CHORD_TYPE_DEF[typeA].map( x => (CHORDNOTE_INTERVALS[x] + rootA) % 12 );
-      var iixB     = CHORD_TYPE_DEF[typeB].map( x => (CHORDNOTE_INTERVALS[x] + rootB) % 12 );
+      var iixA     = elemsA.map( x => (CHORDNOTE_INTERVALS[x] + rootA) % 12 );
+      var iixB     = elemsB.map( x => (CHORDNOTE_INTERVALS[x] + rootB) % 12 );
          for(var i=0; i < iixB.length; i++){
            if( ( ! iixA.includes(iixB[i]) ) ){
              var cix = (iixB[i]+24 - rootA) % 12;
@@ -549,7 +555,8 @@ function getChordDiff(rootA,typeA, rootB, typeB){
 }
 
 function addSupMarker(cb){
-       var addElems = getChordDiff( CURRENT_CHORDROOT_IIX, CURRENT_CHORDTYPE, cb.chordRootIIX, cb.chordType);
+    //CURRENT_CHORDINTERVALS = CHORD_TYPE_DEF[CURRENT_CHORDTYPE];
+       var addElems = getChordDiff( CURRENT_CHORDROOT_IIX, CURRENT_CHORDINTERVALS, cb.chordRootIIX, CHORD_TYPE_DEF[cb.chordType]);
        //cb.diffIIX
        //console.log( addElems )
        var arrow = document.createElement("div");
@@ -558,7 +565,7 @@ function addSupMarker(cb){
        cb.appendChild(arrow);
 }
 function addSubMarker(cb){
-       var addElems = getChordDiff(  cb.chordRootIIX, cb.chordType, CURRENT_CHORDROOT_IIX, CURRENT_CHORDTYPE);
+       var addElems = getChordDiff(  cb.chordRootIIX, CHORD_TYPE_DEF[cb.chordType], CURRENT_CHORDROOT_IIX, CURRENT_CHORDINTERVALS);
        //cb.diffIIX
        //console.log( addElems )
        var arrow = document.createElement("div");
@@ -571,8 +578,8 @@ function addSubMarker(cb){
 function setupChordSynon(){
   var chordRoot = CURRENT_CHORDROOT_IIX;
   var chordType = CURRENT_CHORDTYPE;
-  var chordRelNotes = CHORD_TYPE_DEF[chordType];
-  var chordNotes = getChordNotes(chordRoot,chordType);
+  var chordRelNotes = CURRENT_CHORDINTERVALS //CHORD_TYPE_DEF[chordType];
+  var chordNotes = getChordNotes(chordRoot,CURRENT_CHORDINTERVALS);
   chordNotes.sort();
   
   var panelsetset = document.getElementsByClassName("CHORD_PANELSET");
@@ -580,8 +587,6 @@ function setupChordSynon(){
   var synChordElem = [];
   var supChordElem = [];
   var subChordElem = [];
-  
-  
   
   for(var pss = 0; pss < panelsetset.length; pss++){
       panelset = panelsetset[pss];
@@ -591,7 +596,7 @@ function setupChordSynon(){
           var panel = panelset.panels[i];
           for(var j=0; j < panel.chordElems.length; j++){
               var cb = panel.chordElems[j];
-              var currChordNotes = getChordNotes(cb.chordRootIIX,cb.chordType);
+              var currChordNotes = getChordNotes(cb.chordRootIIX,CHORD_TYPE_DEF[cb.chordType]);
               currChordNotes.sort();
               var isMatch = true;
               var isSub = false;
@@ -728,11 +733,18 @@ function assignChordButtonEvents(){
                     fn.classList.add("fretNoteSelected");
                 } else {
                     //TODO:
+                    
+                    
                     fn.stringBoard.fretNotes.map( fnn => {
                         if(fnn.classList.contains("labelledFretNote")){
                             fnn.classList.add("fretNoteUnselected");
                         }
                     })
+                    fn.classList.remove("fretNoteUnselected");
+                    fn.classList.add("fretNoteSelected");
+                    
+                    
+                    addNoteToChord(this.noteIIX);
                 }
             } else if(event.button == 2){
 
@@ -752,6 +764,17 @@ function assignChordButtonEvents(){
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////// 
+
+function getRelNoteIIX(chordRoot,chordRelNotes){
+    var chordIIX = [];
+    var chordRIX = [];
+    for(var i=0; i < chordRelNotes.length; i++){
+          relNote = CHORDNOTE_INTERVALS[ chordRelNotes[i]];
+          chordIIX.push( (relNote + chordRoot) % 12 );
+          chordRIX.push( (relNote + chordRoot) );
+    }
+    return [chordIIX,chordRIX]
+}
 
 function calculateChords(){
   var currScale = getCurrentScale()
@@ -773,16 +796,29 @@ function calculateChords(){
   
   var chordRoot = CURRENT_CHORDROOT_IIX;
   var chordType = CURRENT_CHORDTYPE;
+  var chordRelNotes = CURRENT_CHORDINTERVALS;
   
-  var chordRelNotes = CHORD_TYPE_DEF[chordType];
-  var chordIIX = [];
-  var chordRIX = [];
-  for(var i=0; i < chordRelNotes.length; i++){
-      relNote = CHORDNOTE_INTERVALS[ chordRelNotes[i]];
-      chordIIX.push( (relNote + chordRoot) % 12 );
-      chordRIX.push( (relNote + chordRoot) );
+  if(chordType != "CUSTOM"){
+      //var chordRelNotes = CHORD_TYPE_DEF[chordType];
+      var chordX = getRelNoteIIX(chordRoot,chordRelNotes)
+      var chordIIX = chordX[0];
+      var chordRIX = chordX[1];
+      pushChordsToInstruments(scaleIIX,chordIIX,chordRIX,chordRelNotes)
+      setupChordSynon();
+      setChordInfoPanel_KNOWN()
+  } else {
+
+      var chordX = getRelNoteIIX(chordRoot,chordRelNotes)
+      var chordIIX = chordX[0];
+      var chordRIX = chordX[1];
+      pushChordsToInstruments(scaleIIX,chordIIX,chordRIX,chordRelNotes)
+      setupChordSynon();
   }
-  
+}
+
+
+function pushChordsToInstruments(scaleIIX,chordIIX,chordRIX,chordRelNotes){
+
   var activeInstrumentList = document.getElementsByClassName("instrumentPanel");
   for( var iidx = 0; iidx < activeInstrumentList.length; iidx++){
       var currInst = activeInstrumentList[iidx];
@@ -865,63 +901,201 @@ function calculateChords(){
   var staffHolderArray = Array.prototype.map.call(staffHolder.getElementsByClassName("STAFF_NOTE"),
                            x => x );
   Array.prototype.map.call(staffHolderArray,
-                           x => x.parentNode.removeChild(x) );
+                           x => x.parentElement.removeChild(x) );
   var staffHolderArray = Array.prototype.map.call(staffHolder.getElementsByClassName("STAFF_FLOAT"),
                            x => x.style.display = "none" );
   chordRIX.map( rix => addNote(rix) );
-  
-  setupChordSynon();
-  setChordInfoPanel_KNOWN()
+
+}
+
+function mouseDownButtonAddNote(event){
+            if(event.button == 0){
+               if(! this.classList.contains("PIANO_ACTIVEKEY")){
+                   addNoteToChord(this.fiix);
+               }
+            } else if(event.button == 2){
+               
+            }
+}
+
+var pianoKeys = document.getElementsByClassName("PIANO_KEY");
+for( var nidx = 0; nidx < pianoKeys.length; nidx++){
+    var fiix = nidx % 12;
+    var pk = pianoKeys[nidx];
+    pk.fiix = fiix;
+    pk.onclick = function(){
+               if(this.classList.contains("PIANO_ACTIVEKEY")){
+                   delNoteToChord(this.fiix);
+               } else {
+                   addNoteToChord(this.fiix);
+               }
+    }
+    /*pk.onmousedown = function(event){
+            if(event.button == 0){
+               if(! this.classList.contains("PIANO_ACTIVEKEY")){
+                   addNoteToChord(this.fiix);
+               }
+            } else if(event.button == 2){
+               
+            }
+    }*/
+}
+
+function addNoteToChord(fiix){
+    fiix = fiix % 12;
+    var pci = document.getElementById("PIANO_CHORDINFO");
+    var menuList = pci.getElementsByClassName("CHORD_INFOPANEL_NOTE_DROPDOWN");
+    CURRENT_CHORDNOTES = Array.prototype.map.call(menuList, x => {
+              return (CHORDNOTE_INTERVALS[x.value] + CURRENT_CHORDROOT_IIX) % 12;
+    })
+    if(!  CURRENT_CHORDNOTES.includes( fiix ) ){
+      var ixx = REV_CHORDNOTE_INTERVALS[(fiix +24 -CURRENT_CHORDROOT_IIX) % 12 ];
+      menuList[menuList.length - 1].value = ixx;
+      menuList[menuList.length - 1].onchange();
+    }
+}
+function delNoteToChord(fiix){
+    fiix = fiix % 12;
+    var pci = document.getElementById("PIANO_CHORDINFO");
+    var menuList = pci.getElementsByClassName("CHORD_INFOPANEL_NOTE_DROPDOWN");
+    CURRENT_CHORDNOTES = Array.prototype.map.call(menuList, x => {
+              return (CHORDNOTE_INTERVALS[x.value] + CURRENT_CHORDROOT_IIX) % 12;
+    })
+    var idx = CURRENT_CHORDNOTES.indexOf(fiix)
+    if(idx  > 0){
+      //var ixx = REV_CHORDNOTE_INTERVALS[(fiix +24 -CURRENT_CHORDROOT_IIX) % 12 ];
+      menuList[idx].value = "";
+      menuList[idx].onchange();
+    }
+}
+
+
+function updateChordFromInfoPanelNoteSelector(){
+          var pci = this.parentElement;
+          if(this.value == "" && (! this.isLastNote)){
+              pci.removeChild(this);
+          } else if(this.isLastNote && this.value != ""){
+              this.isLastNote = false;
+              var nsel = getNewChordNoteOptionSelector("", CURRENT_CHORDROOT_IIX)
+              pci.appendChild(nsel);
+              nsel.isLastNote = true;
+              nsel.onchange = updateChordFromInfoPanelNoteSelector;
+          } else if(this.isRootNote){
+              console.log("root switch not yet implemented! I'm not sure what I want this to do!");
+          }
+          //var pci = document.getElementById("PIANO_CHORDINFO");
+          var menuList = pci.getElementsByClassName("CHORD_INFOPANEL_NOTE_DROPDOWN");
+          CURRENT_CHORDINTERVALS = Array.prototype.map.call(menuList, x => {
+              return x.value
+          })
+          CURRENT_CHORDINTERVALS.pop();
+          updateChordFromIntervalParam();
+          if(CURRENT_CHORDTYPE == "CUSTOM"){
+            pci.childNodes[0].textContent = getNoteName(CURRENT_CHORDROOT_IIX) + "-custom"+"  "
+          } else {
+            pci.childNodes[0].textContent = getNoteName(CURRENT_CHORDROOT_IIX) + getChordTypeString(CURRENT_CHORDTYPE) +"  "
+          }
+          calculateChords();
+}
+
+function updateChordFromIntervalParam(){
+          var perfectMatch = [];
+          for(var i=0; i < CHORD_TYPE_LIST.length; i++){
+              var civ = CHORD_TYPE_DEF[CHORD_TYPE_LIST[i]]
+              console.log("Comparing: "+civ.join("/")+" vs "+CURRENT_CHORDINTERVALS.join("/"));
+              if(civ.length == CURRENT_CHORDINTERVALS.length){
+                  var match = true;
+                  for(var j=0; j < CURRENT_CHORDINTERVALS.length; j++){
+                      if(! civ.includes(CURRENT_CHORDINTERVALS[j])){
+                          match = false;
+                          break
+                      }
+                  }
+                  if(match){
+                      perfectMatch.push(CHORD_TYPE_LIST[i]);
+                      console.log("MATCH! "+civ.join("/")+" vs "+CURRENT_CHORDINTERVALS.join("/"));
+                      break;
+                  }
+              }
+          }
+          if(perfectMatch.length >0){
+              CURRENT_CHORDTYPE     = perfectMatch[0];
+          } else {
+              CURRENT_CHORDTYPE = "CUSTOM"
+          }
+}
+
+
+function getNewChordNoteOptionSelector(vv,chordRoot){
+        var nsel = document.createElement("select");
+        nsel.classList.add("CHORD_INFOPANEL_NOTE_DROPDOWN")
+        //pci.appendChild(nsel);
+        CHORDNOTE_INTERVAL_LIST.map(function(cil){
+            var fiix = (chordRoot + CHORDNOTE_INTERVALS[cil]) % 12;
+            var oo = document.createElement("option");
+            oo.fiix = fiix;
+            oo.value = cil;
+            oo.textContent = cil+"("+ getNoteName(fiix)+")"
+            nsel.appendChild(oo)
+        })
+        var oo = document.createElement("option");
+        oo.value = "";
+        oo.textContent = "";
+        nsel.appendChild(oo)
+        nsel.isRootNote = false;
+        nsel.isLastNote = false;
+        nsel.value = vv;
+        return nsel;
+}
+
+function getNewRootNoteOptionSelector(chordRoot){
+        //console.log("chordroot = "+chordRoot);
+        var nsel = document.createElement("select");
+        nsel.classList.add("CHORD_INFOPANEL_ROOT_DROPDOWN")
+        //pci.appendChild(nsel);
+        for(var fiix=0; fiix < 12; fiix++){
+            var oo = document.createElement("option");
+            oo.value = fiix;
+            oo.textContent = getNoteName(fiix)
+            nsel.appendChild(oo)
+        }
+        var oo = document.createElement("option");
+        oo.value = "";
+        oo.textContent = "";
+        nsel.appendChild(oo)
+        nsel.isRootNote = false;
+        nsel.isLastNote = false;
+        nsel.value = chordRoot;
+        return nsel;
 }
 
 function setChordInfoPanel_KNOWN(){
     var pci = document.getElementById("PIANO_CHORDINFO");
+    pci.innerHTML = "";
+    var rootSelect = getNewRootNoteOptionSelector(CURRENT_CHORDROOT_IIX);
     var chordRoot = CURRENT_CHORDROOT_IIX;
     var chordType = CURRENT_CHORDTYPE;
     var cts = getChordTypeString(chordType);
     var crs = getNoteName(chordRoot);
     
-    var chordRelNotes = CHORD_TYPE_DEF[chordType];
-    pci.textContent = crs + cts;
-
+    var chordRelNotes = CURRENT_CHORDINTERVALS //CHORD_TYPE_DEF[chordType];
+    pci.appendChild(document.createTextNode(crs + cts+" "));
+    pci.appendChild(rootSelect);
+    pci.appendChild(document.createTextNode(": "));
     chordRelNotes.map(function(crn){
         console.log("crn = "+crn);
-        var nsel = document.createElement("select");
-        nsel.classList.add("CHORD_INFOPANEL_NOTE_DROPDOWN")
+        var nsel = getNewChordNoteOptionSelector(crn, chordRoot);
         pci.appendChild(nsel);
-        CHORDNOTE_INTERVAL_LIST.map(function(cil){
-            var fiix = (chordRoot + CHORDNOTE_INTERVALS[cil]) % 12;
-            var oo = document.createElement("option");
-            oo.fiix = fiix;
-            oo.value = cil;
-            oo.textContent = cil+"("+ getNoteName(fiix)+")"
-            nsel.appendChild(oo)
-        })
-        var oo = document.createElement("option");
-        oo.value = "";
-        oo.textContent = "";
-        nsel.appendChild(oo)
-        //var fiix = (chordRoot + CHORDNOTE_INTERVALS[crn]) % 12;
-        nsel.value = crn;
     })
+    var nsel = getNewChordNoteOptionSelector("", chordRoot);
+    pci.appendChild(nsel);
+    nsel.isLastNote = true;
+        
+    pci.getElementsByClassName("CHORD_INFOPANEL_NOTE_DROPDOWN")[0].isRootNote = true;
     
-        var nsel = document.createElement("select");
-        nsel.classList.add("CHORD_INFOPANEL_NOTE_DROPDOWN")
-        pci.appendChild(nsel);
-        CHORDNOTE_INTERVAL_LIST.map(function(cil){
-            var fiix = (chordRoot + CHORDNOTE_INTERVALS[cil]) % 12;
-            var oo = document.createElement("option");
-            oo.fiix = fiix;
-            oo.value = cil;
-            oo.textContent = cil+"("+ getNoteName(fiix)+")"
-            nsel.appendChild(oo)
-        })
-        var oo = document.createElement("option");
-        oo.value = "";
-        oo.textContent = "";
-        nsel.appendChild(oo)
-        nsel.value = "";
-    
+    Array.prototype.map.call(pci.getElementsByClassName("CHORD_INFOPANEL_NOTE_DROPDOWN"),
+                             x => x.onchange = updateChordFromInfoPanelNoteSelector);
+
     //CHORDNOTE_INTERVAL_LIST
     
 }
@@ -973,7 +1147,7 @@ function setupScaleChords(){
       for(var k=0; k < chortOpts.length; k++){
         if(hasBeenAdded == 0){
           var chordType = chortOpts[k];
-          var inKey = isChordInKey(chordRootIIX,chordType,scaleIIX);
+          var inKey = isChordInKey(chordRootIIX,CHORD_TYPE_DEF[chordType],scaleIIX);
           if(inKey){
             var cb = document.createElement("button");
             cb.classList.add("CHORD_BUTTON");
@@ -1054,7 +1228,7 @@ function setupOtherChords(){
           cb.chordType    = chordType;
           cb.chordTitleString = chordRootID + getChordTypeString(chordType);
           panel.chordElems.push(cb);
-          var inKey = isChordInKey(chordRootIIX,chordType,scaleIIX);
+          var inKey = isChordInKey(chordRootIIX,CHORD_TYPE_DEF[chordType],scaleIIX);
           if(! inKey){
               cb.classList.add("CHORD_BUTTON_OFFKEY");
           } else {
