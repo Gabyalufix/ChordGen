@@ -33,6 +33,31 @@ KEYROOT_IIX_FLATS = [
   1,3,5,6,8,10
 ]
 
+ 
+var NOTE_BASENAMES_SHARP = ["C","C","D","D",
+                    "E","F","F","G",
+                    "G","A","A","B"]
+var NOTE_BASENAMES_FLAT  = ["C","D","D","E",
+                    "E","F","G","G",
+                    "A","A","B","B"]
+
+var NOTE_BASEMOD_SHARP = ["","#","","#",
+                    "","","#","",
+                    "#","","#",""]
+var NOTE_BASEMOD_FLAT  = ["","b","","b",
+                    "","","b","",
+                    "b","","b",""]
+
+var NOTE_NUMS = {
+    "C":0,
+    "D":1,
+    "E":2,
+    "F":3,
+    "G":4,
+    "A":5,
+    "B":6
+}
+
 
 CURRENT_SCALE_SHARPTYPE = "sharp";
 
@@ -244,6 +269,11 @@ CHORDSET_OPTIONS = [
     ["sus2"],
     ["7sus4","7sus2"]
 ]
+
+
+var STAFF_HOLDER = document.getElementById("STAFF_HOLDER");
+var STAVES = STAFF_HOLDER.getElementsByClassName("STAFF_LINE")
+
 
 
 document.getElementById("SELECT_SCALEKEYTYPE").innerHTML = "";
@@ -697,33 +727,14 @@ function calculateChords(){
                            x => x );
   Array.prototype.map.call(staffHolderArray,
                            x => x.parentNode.removeChild(x) );
-  
+  var staffHolderArray = Array.prototype.map.call(staffHolder.getElementsByClassName("STAFF_FLOAT"),
+                           x => x.style.display = "none" );
   chordRIX.map( rix => addNote(rix) );
   
   setupChordSynon();
   
 }
-var STAFF_HOLDER = document.getElementById("STAFF_HOLDER");
-var STAVES = STAFF_HOLDER.getElementsByClassName("STAFF_LINE")
 
-function addNote( fiix, octave = 4){
-  
-  if(octave == 4){
-    var lineNum = Math.floor((fiix + 1) / 2);
-    var isUp    = (fiix + 1) % 2 == 1;
-    console.log("adding note: "+fiix + " / "+lineNum+" / "+isUp);
-    if(isUp){
-      var ee = document.createElement("div");
-      ee.classList.add("STAFF_NOTE");
-      ee.classList.add("UP");
-      STAVES[lineNum].appendChild(ee);
-    } else {
-      var ee = document.createElement("div");
-      ee.classList.add("STAFF_NOTE");
-      STAVES[lineNum].appendChild(ee);
-    }
-  }
-}
 
 function getNoteSelector(){
   //NOTE_NAMES_GENERAL
@@ -1246,4 +1257,185 @@ for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
   KEY_SELECT_BUTTONS[i].onclick = KEY_SELECT_BUTTON_ONCLICK
 
 }
+
+
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+function getNoteInfo(iix){
+  var octave = Math.floor(iix / 12) + 4;
+  var noteBaseName = NOTE_BASENAMES_SHARP[iix % 12];
+  var noteBaseMod  = NOTE_BASEMOD_SHARP[iix % 12];
+  if(CURRENT_SCALE_SHARPTYPE != "sharp"){
+    noteBaseName = NOTE_BASENAMES_FLAT[iix % 12];
+    noteBaseMod  = NOTE_BASEMOD_FLAT[iix % 12];
+  }
+  var noteNum = NOTE_NUMS[noteBaseName] + ( (octave-4) * 7)
+  return {baseName: noteBaseName,baseMod: noteBaseMod,octave:octave, noteNum : noteNum};
+}
+
+
+
+function addNote( fiix ){
+  var nn = getNoteInfo(fiix);
+  //&#9839; sharp
+  //&#9837; flat
+  //&#9837; natural
+  //if(nn.octave == 4){
+    var lineNum = Math.floor((nn.noteNum + 1) / 2);
+    var isUp    = (nn.noteNum + 1) % 2 == 1;
+    console.log("Adding note: "+nn.noteNum + " / "+lineNum+" / "+isUp);
+      var ee = document.createElement("div");
+      ee.classList.add("STAFF_NOTE");
+
+    if(isUp){
+      if(lineNum < 1){
+        document.getElementById("STAFF_FLOAT_M1").style.display = "block";
+      }
+      lineNum = lineNum + 1;
+      ee.classList.add("DN");
+      STAVES[lineNum].appendChild(ee);
+      if(STAVES[lineNum].classList.contains("HIGHFLOAT")){
+        var curr = STAVES[lineNum];
+        while(curr && curr.classList.contains("HIGHFLOAT")){
+          if(curr.classList.contains("STAFF_FLOAT")){
+            curr.style.display = "block";
+          }
+          curr = curr.previousElementSibling;
+        }
+      }
+      if(lineNum > 0 && STAVES[lineNum-1].getElementsByClassName("MID").length > 0){
+        ee.classList.add("RIGHT")
+      }
+    } else {
+      ee.classList.add("MID");
+      
+      STAVES[lineNum].appendChild(ee);
+      if(STAVES[lineNum].classList.contains("HIGHFLOAT")){
+        var curr = STAVES[lineNum].previousElementSibling.previousElementSibling;
+        while(curr && curr.classList.contains("HIGHFLOAT")){
+          if(curr.classList.contains("STAFF_FLOAT")){
+            curr.style.display = "block";
+          }
+          curr = curr.previousElementSibling;
+        }
+      }
+
+    }
+    
+    if( nn.baseMod == "#"){
+      var mm = document.createElement("div");
+      mm.classList.add("STAFF_NOTE_MODLABEL");
+      mm.textContent = "\u266F";
+      ee.appendChild(mm);
+    } else if(nn.baseMod == "b"){
+      var mm = document.createElement("div");
+      mm.classList.add("STAFF_NOTE_MODLABEL");
+      mm.textContent = "\u266D";
+      ee.appendChild(mm);
+    }
+  //}
+}
+
+
+
+var CHORD_PANELSET_EXPANDALL_BUTTON = document.createElement("button");
+CHORD_PANELSET_EXPANDALL_BUTTON.textContent = "SHOW ALL";
+//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
+
+var CHORD_PANELSET_EXPAND_BUTTON = document.createElement("button");
+CHORD_PANELSET_EXPAND_BUTTON.textContent = "++";
+//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
+
+var CHORD_PANELSET_REDUCE_BUTTON = document.createElement("button");
+CHORD_PANELSET_REDUCE_BUTTON.textContent = "--";
+//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
+
+var CHORD_PANELSET_UP_BUTTON = document.createElement("button");
+CHORD_PANELSET_UP_BUTTON.textContent = "^";
+//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
+
+var CHORD_PANELSET_DN_BUTTON = document.createElement("button");
+CHORD_PANELSET_DN_BUTTON.textContent = "v";
+//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
+
+var CHORD_PANELSET_CURRVIS_CT  = 20;
+var CHORD_PANELSET_CURRVIS_IDX = 0;
+var CHORD_PANELSET_PANELS = document.getElementById("CHORD_PANELSET").children
+
+function chordPanelSet_setVisiblePanels(){
+  for(var i=0; i < CHORD_PANELSET_PANELS.length; i++){
+    console.log("panel: "+CHORD_PANELSET_PANELS[i]);
+    if(i < CHORD_PANELSET_CURRVIS_IDX || i >= CHORD_PANELSET_CURRVIS_IDX + CHORD_PANELSET_CURRVIS_CT){
+        CHORD_PANELSET_PANELS[i].style.display = "none";
+    } else {
+        CHORD_PANELSET_PANELS[i].style.display = "grid";
+    }
+  }
+}
+chordPanelSet_setVisiblePanels();
+
+CHORD_PANELSET_EXPAND_BUTTON.onclick = function(){
+    CHORD_PANELSET_CURRVIS_CT = CHORD_PANELSET_CURRVIS_CT + 1;
+    if(CHORD_PANELSET_CURRVIS_IDX + CHORD_PANELSET_CURRVIS_CT >= CHORD_PANELSET_PANELS.length){
+        this.disabled =true;
+    }
+    CHORD_PANELSET_REDUCE_BUTTON.disabled = false;
+    chordPanelSet_setVisiblePanels();
+}
+CHORD_PANELSET_REDUCE_BUTTON.onclick = function(){
+    CHORD_PANELSET_CURRVIS_CT = CHORD_PANELSET_CURRVIS_CT -1;
+    if(CHORD_PANELSET_CURRVIS_CT == 0){
+        this.disabled = true;
+    }
+    CHORD_PANELSET_EXPAND_BUTTON.disabled = false;   
+    chordPanelSet_setVisiblePanels();
+}
+CHORD_PANELSET_UP_BUTTON.onclick = function(){
+    CHORD_PANELSET_CURRVIS_IDX = CHORD_PANELSET_CURRVIS_IDX - 1;
+    if(CHORD_PANELSET_CURRVIS_IDX == 0){
+        this.disabled =true;
+    }
+    CHORD_PANELSET_DN_BUTTON.disabled = false;
+    chordPanelSet_setVisiblePanels();
+}
+CHORD_PANELSET_DN_BUTTON.onclick = function(){
+    CHORD_PANELSET_CURRVIS_IDX = CHORD_PANELSET_CURRVIS_IDX + 1;
+    if(CHORD_PANELSET_CURRVIS_IDX + CHORD_PANELSET_CURRVIS_CT >= CHORD_PANELSET_PANELS.length){
+        this.disabled =true;
+    }
+    CHORD_PANELSET_UP_BUTTON.disabled = false;
+    chordPanelSet_setVisiblePanels();
+}
+CHORD_PANELSET_EXPANDALL_BUTTON.onclick = function(){
+   CHORD_PANELSET_CURRVIS_IDX = 0;
+   CHORD_PANELSET_CURRVIS_CT  = CHORD_PANELSET_PANELS.length;
+    chordPanelSet_setVisiblePanels();
+
+}
+
+document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_EXPAND_BUTTON)
+document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_REDUCE_BUTTON)
+document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_UP_BUTTON)
+document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_DN_BUTTON)
+document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_EXPANDALL_BUTTON)
+
 
