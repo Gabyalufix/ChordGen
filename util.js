@@ -206,21 +206,26 @@ CHORD_TYPE_LIST = [
 
 CHORDNOTE_INTERVALS = {
   "R":0,
-  "3":4,
-  "5":7,
-  "m3":3,
-  "7":11,
-  "m7":10,
-  "6":9,
-  "9":14, //or 2?
-  "m5":6,
-  "#5":8,
-  "11":17, //or 5
-  "13":21, //or 9
+  "b2":1,  
   "2":2,
+  "m3":3,
+  "3":4,
   "4":5,
-  "m6":8
+  "m5":6,
+  "5":7,
+  "#5":8,
+  "m6":8,
+  "6":9,
+  "m7":10,
+  "7":11,
+  "9":14, //or 2?
+  "11":17, //or 5
+  "13":21 //or 9
 }
+
+CHORDNOTE_INTERVAL_LIST = [
+ "R","b2","2","m3","3","4","m5","5","#5","m6","6","m7","7","9","11","13"
+]
 
 REV_CHORDNOTE_INTERVALS = {
   0:"R",
@@ -354,6 +359,19 @@ function selectChord(){
 
 
 
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                          Util Functions
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+
 function getNoteName(ixx){
   if(CURRENT_SCALE_SHARPTYPE == "sharp"){
     return NOTE_NAMES_SHARP[(ixx % 12)]
@@ -405,6 +423,77 @@ function getChordNotes(chordRootIIX,chordType){
   }
   return chordIIX;
 }
+
+function dropFromArray(aa,elem){
+  var ix = aa.indexOf(elem);
+  if(ix > -1){
+    aa.splice(ix,1);
+  }
+}
+
+function getNoteSelector(){
+  //NOTE_NAMES_GENERAL
+  
+  var ns = document.createElement("select");
+  ns.classList.add("SELECT_NOTE");
+  for(var i=0; i < NOTE_NAMES_SHARP.length; i++){
+    var nn = document.createElement("option");
+    nn.textContent = NOTE_NAMES_SHARP[i];
+    nn.value = i+"";
+    ns.appendChild(nn);
+  }
+  return ns;
+}
+
+function tuneStringToNote(sb, iix){
+  for(var i=0; i < sb.fretNotes.length; i++){
+    sb.fretNotes[i] = getNoteName( iix + i );
+  }
+}
+
+//document.getElementById("INSTRUMENT_SELECT").onchange = setInstrument
+
+function getChordTypeString( ct ){
+  if(ct == "M"){
+    return ""
+  } else {
+    return ct;
+  }
+}
+
+CHORDSET_OPTIONS = [
+    ["M","m","dim","aug"],
+    ["7","m7","maj7","m(maj7)","m7b5","7b5","7#5","hdim7"],
+    ["6","m6","dim7"],
+    ["sus4"],
+    ["sus2"],
+    ["7sus4","7sus2"]
+]
+
+function isChordInKey(chordRootIIX,chordType,scaleIIX){
+    var chordRelNotes = CHORD_TYPE_DEF[chordType];
+    var inKey = true;
+    for(var z=0; z < chordRelNotes.length; z++){
+            relNote = CHORDNOTE_INTERVALS[ chordRelNotes[z]];
+            var fiix = (relNote + chordRootIIX) % 12;
+            if( ! scaleIIX.includes(fiix) ){
+                inKey = false;
+            }
+    }
+    return inKey;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                          Chord Synon calcs
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 
 function copyChordButton(cb){
@@ -478,14 +567,6 @@ function addSubMarker(cb){
        cb.appendChild(arrow);
 }
 
-
-
-function dropFromArray(aa,elem){
-  var ix = aa.indexOf(elem);
-  if(ix > -1){
-    aa.splice(ix,1);
-  }
-}
 
 function setupChordSynon(){
   var chordRoot = CURRENT_CHORDROOT_IIX;
@@ -611,6 +692,67 @@ function setupChordSynon(){
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                         Chord Buttons:
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+
+function assignChordButtonEvents(){
+    Array.prototype.map.call(document.getElementsByClassName("fretNote"),
+    fn => {
+         console.log("?");
+         fn.onmousedown = function(event){
+            if(event.button == 0){
+                //console.log("BUTTON-0");
+                //console.log(fn.stringBoard.fretNotes)
+                if(fn.classList.contains("fretNoteSelected")){
+                    fn.stringBoard.fretNotes.map( fnn => {
+                            fnn.classList.remove("fretNoteUnselected");
+                            fnn.classList.remove("fretNoteSelected");
+                    })
+                } else if(fn.classList.contains("labelledFretNote")){
+                    fn.stringBoard.fretNotes.map( fnn => {
+                        fnn.classList.remove("fretNoteSelected");
+                        if(fnn.classList.contains("labelledFretNote")){
+                            fnn.classList.add("fretNoteUnselected");
+                        }
+                    })
+                    fn.classList.remove("fretNoteUnselected");
+                    fn.classList.add("fretNoteSelected");
+                } else {
+                    //TODO:
+                    fn.stringBoard.fretNotes.map( fnn => {
+                        if(fnn.classList.contains("labelledFretNote")){
+                            fnn.classList.add("fretNoteUnselected");
+                        }
+                    })
+                }
+            } else if(event.button == 2){
+
+            }
+         }
+    } );
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                         Calculate chord
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+
 function calculateChords(){
   var currScale = getCurrentScale()
   var currentScaleType = currScale.scaleType;
@@ -629,8 +771,6 @@ function calculateChords(){
   console.log("scale: "+getNoteName(rootIIX)+" "+currentScaleType+":");
   console.log( "    ["+scaleNotes.join(",")+"]" );
   
-  //var chordRoot = parseInt(document.getElementById("SELECT_ROOT").value)-1;
-  //var chordType = document.getElementById("SELECT_CHORDTYPE").value;
   var chordRoot = CURRENT_CHORDROOT_IIX;
   var chordType = CURRENT_CHORDTYPE;
   
@@ -642,16 +782,6 @@ function calculateChords(){
       chordIIX.push( (relNote + chordRoot) % 12 );
       chordRIX.push( (relNote + chordRoot) );
   }
-  
-  //var chordIntervals = CHORD_TYPE_INTERVALS[chordType];
-  //var chordIIX = [chordRoot];
-  //currIIX = chordRoot;
-  //for(var i=0; i < chordIntervals.length; i++){
-  //  currIIX = currIIX + chordIntervals[i];
-  //  chordIIX.push( currIIX % 12 );
-  //}
-  //console.log("chord: "+getNoteName(chordRoot)+" "+chordType+":");
-  //console.log( "    ["+chordIIX.join(",")+"]" );
   
   var activeInstrumentList = document.getElementsByClassName("instrumentPanel");
   for( var iidx = 0; iidx < activeInstrumentList.length; iidx++){
@@ -741,204 +871,72 @@ function calculateChords(){
   chordRIX.map( rix => addNote(rix) );
   
   setupChordSynon();
-  
+  setChordInfoPanel_KNOWN()
 }
 
-
-function getNoteSelector(){
-  //NOTE_NAMES_GENERAL
-  
-  var ns = document.createElement("select");
-  ns.classList.add("SELECT_NOTE");
-  for(var i=0; i < NOTE_NAMES_SHARP.length; i++){
-    var nn = document.createElement("option");
-    nn.textContent = NOTE_NAMES_SHARP[i];
-    nn.value = i+"";
-    ns.appendChild(nn);
-  }
-  return ns;
-}
-
-function setInstrument(){
-  var inst = INSTRUMENTS[ this.selector.value ].copyInstrument();
-  console.log("Setting instrument :"+this.selector.value);
-  //CURRENT_INSTRUMENT = inst;
-  var fretboard = this.fretBoard;
-  this.instrument = inst;
-  fretboard.innerHTML = "";
-  var spacing = [];
-  var totalSpacing = 0;
-    for(var j=0; j < inst.fretSpacing.length; j++){
-      totalSpacing = totalSpacing + inst.fretSpacing[j];
-    }
-    for(var j=0; j < inst.fretSpacing.length; j++){
-      spacing[j] = inst.fretSpacing[j] * FRETBOARD_LENGTH / totalSpacing;
-    }
-  var slab = document.createElement("div");
-  slab.classList.add("stringLabel");
-  fretboard.appendChild(slab);
-  var sns = document.createElement("div");
-  sns.classList.add("SELECT_NOTE_SPACER");
-  slab.appendChild(sns);
-  for(var j=0; j < spacing.length; j++){
-    var fb = document.createElement("div");
-    fb.classList.add("fretLabel");
-    slab.appendChild(fb);
-    fb.textContent = ""+j;
-    fb.style.height = spacing[j]+"px";
-    fb.style["line-height"] = spacing[j]+"px";
-  }
-  //CURRENT_INSTRUMENT.stringIIX[sidx]
-  this.stringBoardList = [];
-  for(var i = 0; i < inst.stringIIX.length; i++){
-    //console.log("adding String: "+inst.stringIIX[i]+" to instrument.");
-    var sbh = document.createElement("div");
-    sbh.classList.add("stringBoardHolder");
-    var stringNoteSelector = getNoteSelector();
-    sbh.appendChild(stringNoteSelector);
-    stringNoteSelector.value = ""+inst.stringIIX[i];
-
-    var sb = document.createElement("div");
-    sb.sbh = sbh;
-    sb.spacing = spacing;
-    sb.fretNotes = [];
-    sb.stringNoteSelector = stringNoteSelector;
-    sb.classList.add("stringBoard");
-    stringNoteSelector.sb = sb
-    stringNoteSelector.stringIdx = i;
-    stringNoteSelector.onchange = function(){
-      var iix = parseInt(this.value);
-      tuneStringToNote(this.sb, iix);
-      inst.stringIIX[this.stringIdx] = iix;
-      calculateChords();
-    }
-    this.stringBoardList.push(sb);
-    sbh.appendChild(sb);
-    this.fretBoard.appendChild(sbh);
-    var ss = document.createElement("div");
-    ss.classList.add("stringLine");
-    sb.appendChild(ss);
-    for(var j=0; j < spacing.length; j++){
-      //console.log(" j = "+j);
-      var fb = document.createElement("div");
-      var fn = document.createElement("button");
-      var noteLabel = document.createElement("div");
-      fb.classList.add("fret");
-      fn.classList.add("fretNote");
-      noteLabel.classList.add("chordNoteLabel");
-
-      fb.style.height = spacing[j]+"px";
-      sb.appendChild(fb);
-      fb.appendChild(fn);
-      sb.fretNotes.push(fn);
-      //console.log(noteLabel)
-      //console.log(fn)
-      fn.textContent = getNoteName( inst.stringIIX[i] + j );
-      fn.appendChild(noteLabel);
-    }
-  }
-  calculateChords();
-}
-
-function tuneStringToNote(sb, iix){
-  for(var i=0; i < sb.fretNotes.length; i++){
-    sb.fretNotes[i] = getNoteName( iix + i );
-  }
-}
-
-
-//document.getElementById("INSTRUMENT_SELECT").onchange = setInstrument
-
-function getChordTypeString( ct ){
-  if(ct == "M"){
-    return ""
-  } else {
-    return ct;
-  }
-}
-
-function setupScaleChords_OLD(){
-  var currScale = getCurrentScale()
-  var currentScaleType = currScale.scaleType;
-  var rootIIX = currScale.rootIIX;
-  var intervals = currScale.intervals;
-  var scaleIIX = getScaleIIX(intervals,rootIIX);
-  var chordSet = CHORDSETS[currentScaleType];
-  
-  var panelset = document.getElementById("CHORD_PANELSET0");
-  panelset.innerHTML = "";
-  var panel = document.createElement("div");
-  panel.classList.add("CHORD_PANEL3");
-  panelset.appendChild(panel);
-  panelset.panels = [panel];
-  
-  
-  for(var i=0; i < chordSet.length; i++){
-    //var cbc = document.createElement("div");
-    //cbc.classList.add("CHORD_BUTTON_COLUMN");
-    //panel.appendChild(cbc);
+function setChordInfoPanel_KNOWN(){
+    var pci = document.getElementById("PIANO_CHORDINFO");
+    var chordRoot = CURRENT_CHORDROOT_IIX;
+    var chordType = CURRENT_CHORDTYPE;
+    var cts = getChordTypeString(chordType);
+    var crs = getNoteName(chordRoot);
     
-    console.log("starting chordset: "+i);
-    for(var j=0; j < scaleIIX.length; j++){
-      var chordRootIIX = scaleIIX[j];
-      var chordRootID  = getNoteName(chordRootIIX);
-      //console.log("   checking: "+j);
-      var hasBeenAdded = 0;
-      for(var k=0; k < chordSet[i].length; k++){
-        if(chordSet[i][k][0] == j){
-          var cb = document.createElement("button");
-          cb.classList.add("CHORD_BUTTON");
-          cb.textContent = chordRootID + getChordTypeString(chordSet[i][k][1]);
-          cb.chordString = chordRootID + chordSet[i][k][1];
-          cb.chordRootIIX = chordRootIIX;
-          cb.chordType    = chordSet[i][k][1];
-          cb.onclick = selectChord;
-          panel.appendChild(cb);
-          console.log("     button added: "+chordRootID + chordSet[i][k][1]);
-          hasBeenAdded = 1;
-        }
-      }
-      if(hasBeenAdded == 0) {
-          var cb = document.createElement("button");
-          cb.classList.add("CHORD_NOBUTTON");
-          panel.appendChild(cb);
-          console.log("     no button added.");
-      }
-    }
-    
-    if( i % 3 == 2){
-      panel = document.createElement("div");
-      panel.classList.add("CHORD_PANEL3");
-      panelset.appendChild(panel);
-      panelset.panels.push(panel);
-    }
-    
-  }
-  setupOtherChords()
-}
-
-CHORDSET_OPTIONS = [
-    ["M","m","dim","aug"],
-    ["7","m7","maj7","m(maj7)","m7b5","7b5","7#5","hdim7"],
-    ["6","m6","dim7"],
-    ["sus4"],
-    ["sus2"],
-    ["7sus4","7sus2"]
-]
-
-function isChordInKey(chordRootIIX,chordType,scaleIIX){
     var chordRelNotes = CHORD_TYPE_DEF[chordType];
-    var inKey = true;
-    for(var z=0; z < chordRelNotes.length; z++){
-            relNote = CHORDNOTE_INTERVALS[ chordRelNotes[z]];
-            var fiix = (relNote + chordRootIIX) % 12;
-            if( ! scaleIIX.includes(fiix) ){
-                inKey = false;
-            }
-    }
-    return inKey;
+    pci.textContent = crs + cts;
+
+    chordRelNotes.map(function(crn){
+        console.log("crn = "+crn);
+        var nsel = document.createElement("select");
+        nsel.classList.add("CHORD_INFOPANEL_NOTE_DROPDOWN")
+        pci.appendChild(nsel);
+        CHORDNOTE_INTERVAL_LIST.map(function(cil){
+            var fiix = (chordRoot + CHORDNOTE_INTERVALS[cil]) % 12;
+            var oo = document.createElement("option");
+            oo.fiix = fiix;
+            oo.value = cil;
+            oo.textContent = cil+"("+ getNoteName(fiix)+")"
+            nsel.appendChild(oo)
+        })
+        var oo = document.createElement("option");
+        oo.value = "";
+        oo.textContent = "";
+        nsel.appendChild(oo)
+        //var fiix = (chordRoot + CHORDNOTE_INTERVALS[crn]) % 12;
+        nsel.value = crn;
+    })
+    
+        var nsel = document.createElement("select");
+        nsel.classList.add("CHORD_INFOPANEL_NOTE_DROPDOWN")
+        pci.appendChild(nsel);
+        CHORDNOTE_INTERVAL_LIST.map(function(cil){
+            var fiix = (chordRoot + CHORDNOTE_INTERVALS[cil]) % 12;
+            var oo = document.createElement("option");
+            oo.fiix = fiix;
+            oo.value = cil;
+            oo.textContent = cil+"("+ getNoteName(fiix)+")"
+            nsel.appendChild(oo)
+        })
+        var oo = document.createElement("option");
+        oo.value = "";
+        oo.textContent = "";
+        nsel.appendChild(oo)
+        nsel.value = "";
+    
+    //CHORDNOTE_INTERVAL_LIST
+    
 }
 
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                          Setup Scale chords
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 function setupScaleChords(){
   console.log("SETTING UP SCALE CHORDS")
@@ -1088,7 +1086,102 @@ function addValuesToSelect(selector,valueList){
 }
 
 
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                          Add instruments
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
 var activeInstruments = []
+
+function setInstrument(){
+  var inst = INSTRUMENTS[ this.selector.value ].copyInstrument();
+  console.log("Setting instrument :"+this.selector.value);
+  //CURRENT_INSTRUMENT = inst;
+  var fretboard = this.fretBoard;
+  this.instrument = inst;
+  fretboard.innerHTML = "";
+  var spacing = [];
+  var totalSpacing = 0;
+    for(var j=0; j < inst.fretSpacing.length; j++){
+      totalSpacing = totalSpacing + inst.fretSpacing[j];
+    }
+    for(var j=0; j < inst.fretSpacing.length; j++){
+      spacing[j] = inst.fretSpacing[j] * FRETBOARD_LENGTH / totalSpacing;
+    }
+  var slab = document.createElement("div");
+  slab.classList.add("stringLabel");
+  fretboard.appendChild(slab);
+  var sns = document.createElement("div");
+  sns.classList.add("SELECT_NOTE_SPACER");
+  slab.appendChild(sns);
+  for(var j=0; j < spacing.length; j++){
+    var fb = document.createElement("div");
+    fb.classList.add("fretLabel");
+    slab.appendChild(fb);
+    fb.textContent = ""+j;
+    fb.style.height = spacing[j]+"px";
+    fb.style["line-height"] = spacing[j]+"px";
+  }
+  //CURRENT_INSTRUMENT.stringIIX[sidx]
+  this.stringBoardList = [];
+  for(var i = 0; i < inst.stringIIX.length; i++){
+    //console.log("adding String: "+inst.stringIIX[i]+" to instrument.");
+    var sbh = document.createElement("div");
+    sbh.classList.add("stringBoardHolder");
+    var stringNoteSelector = getNoteSelector();
+    sbh.appendChild(stringNoteSelector);
+    stringNoteSelector.value = ""+inst.stringIIX[i];
+
+    var sb = document.createElement("div");
+    sb.sbh = sbh;
+    sb.spacing = spacing;
+    sb.fretNotes = [];
+    sb.stringNoteSelector = stringNoteSelector;
+    sb.classList.add("stringBoard");
+    stringNoteSelector.sb = sb
+    stringNoteSelector.stringIdx = i;
+    stringNoteSelector.onchange = function(){
+      var iix = parseInt(this.value);
+      tuneStringToNote(this.sb, iix);
+      inst.stringIIX[this.stringIdx] = iix;
+      calculateChords();
+    }
+    this.stringBoardList.push(sb);
+    sbh.appendChild(sb);
+    this.fretBoard.appendChild(sbh);
+    var ss = document.createElement("div");
+    ss.classList.add("stringLine");
+    sb.appendChild(ss);
+    for(var j=0; j < spacing.length; j++){
+      //console.log(" j = "+j);
+      var fb = document.createElement("div");
+      var fn = document.createElement("button");
+      var noteLabel = document.createElement("div");
+      fb.classList.add("fret");
+      fn.classList.add("fretNote");
+      noteLabel.classList.add("chordNoteLabel");
+      fn.stringBoard = sb;
+      
+      fb.style.height = spacing[j]+"px";
+      sb.appendChild(fb);
+      fb.appendChild(fn);
+      sb.fretNotes.push(fn);
+      //console.log(noteLabel)
+      //console.log(fn)
+      fn.noteIIX = inst.stringIIX[i] + j;
+      fn.textContent = getNoteName( inst.stringIIX[i] + j );
+      fn.appendChild(noteLabel);
+    }
+  }
+  calculateChords();
+}
 
 function addInstrument( instrumentID , initialInstrument ){
     console.log("--------------- adding instrument: " +instrumentID);
@@ -1122,6 +1215,95 @@ function addInstrument( instrumentID , initialInstrument ){
     document.getElementById("maindiv").appendChild( ipanel )
     
 }
+
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                         KEY SELECT PANEL
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+
+var KEY_SELECT_PANEL = document.getElementById("KEY_SELECT_PANEL");
+
+var KEY_SELECT_BUTTONS = KEY_SELECT_PANEL.getElementsByClassName("KEY_BUTTON");
+var KEY_SELECT_BUTTONS_FIIX = [1,3,6,8,10,0,2,4,5,7,9,11];
+var KEY_SELECT_BUTTONS_HASVARIANT = [false,true,false,false,false,false,true,false,false,false,false,false]; 
+var KEY_SELECT_BUTTONS_ISVARIANT = [false,false,false,false,false,false,false,false,false,false,false,false]; 
+for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
+  var fiix = KEY_SELECT_BUTTONS_FIIX[i]
+  KEY_SELECT_BUTTONS[i].FIIX = fiix
+  KEY_SELECT_BUTTONS[i].HASVARIANT = KEY_SELECT_BUTTONS_HASVARIANT[fiix]
+  KEY_SELECT_BUTTONS[i].ISVARIANT = KEY_SELECT_BUTTONS_ISVARIANT[fiix]
+  KEY_SELECT_BUTTONS[i].keyNames = KEYROOT_NAMES_WITHALTS[ fiix ]
+
+}
+
+//var CURRENT_SCALE = 0;
+//var CURRENT_SCALE_SHARPTYPE = "sharp";
+function KEY_SELECT_BUTTON_ONCLICK(){
+  CURRENT_SCALE = this.FIIX;
+  if(this.classList.contains("KEY_BUTTON_SELECTED")){
+    console.log("doubleclick!");
+    if(this.HASVARIANT){
+      console.log("doubleclick HV!");
+      this.ISVARIANT = ! this.ISVARIANT
+      if(this.ISVARIANT){
+        console.log("doubleclick HVS!");
+        this.textContent = this.keyNames[1] + "/" + this.keyNames[0];
+        CURRENT_SCALE_SHARPTYPE = "sharp"
+        
+      } else {
+        console.log("doubleclick HVF!");
+        this.textContent = this.keyNames[0] + "/" + this.keyNames[1];
+        CURRENT_SCALE_SHARPTYPE = "flat"
+      }
+    }
+  } else {
+    for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
+      KEY_SELECT_BUTTONS[i].classList.remove("KEY_BUTTON_SELECTED");
+    }
+    this.classList.add("KEY_BUTTON_SELECTED");
+    if( this.HASVARIANT) {
+      if(this.ISVARIANT){
+        CURRENT_SCALE_SHARPTYPE = "sharp"
+      } else {
+        CURRENT_SCALE_SHARPTYPE = "flat"
+      }
+    } else if(KEYROOT_IIX_FLATS.includes(this.FIIX)) {
+      CURRENT_SCALE_SHARPTYPE = "flat"
+    } else {
+      CURRENT_SCALE_SHARPTYPE = "sharp"
+    }
+  }
+  setupScaleChords();
+}
+for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
+  KEY_SELECT_BUTTONS[i].onclick = KEY_SELECT_BUTTON_ONCLICK
+
+}
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                         INITIALIZATION
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
 
 console.log("Creating panels, etc...")
 
@@ -1201,73 +1383,13 @@ document.getElementById("ShowStaff").onchange = function(){
     document.getElementById("STAFF_HOLDER").style.display = "none";
   }
 }
-
+assignChordButtonEvents()
 /*
 KEYROOT_NAMES_WITHALTS = [
   "C",["Db","C#"],"D","Eb","E","F",["Gb","F#"],"G","Ab","A","Bb",["B","Cb"]
 ]
 */
 
-var KEY_SELECT_PANEL = document.getElementById("KEY_SELECT_PANEL");
-
-var KEY_SELECT_BUTTONS = KEY_SELECT_PANEL.getElementsByClassName("KEY_BUTTON");
-var KEY_SELECT_BUTTONS_FIIX = [1,3,6,8,10,0,2,4,5,7,9,11];
-var KEY_SELECT_BUTTONS_HASVARIANT = [false,true,false,false,false,false,true,false,false,false,false,false]; 
-var KEY_SELECT_BUTTONS_ISVARIANT = [false,false,false,false,false,false,false,false,false,false,false,false]; 
-for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
-  var fiix = KEY_SELECT_BUTTONS_FIIX[i]
-  KEY_SELECT_BUTTONS[i].FIIX = fiix
-  KEY_SELECT_BUTTONS[i].HASVARIANT = KEY_SELECT_BUTTONS_HASVARIANT[fiix]
-  KEY_SELECT_BUTTONS[i].ISVARIANT = KEY_SELECT_BUTTONS_ISVARIANT[fiix]
-  KEY_SELECT_BUTTONS[i].keyNames = KEYROOT_NAMES_WITHALTS[ fiix ]
-
-}
-
-//var CURRENT_SCALE = 0;
-//var CURRENT_SCALE_SHARPTYPE = "sharp";
-function KEY_SELECT_BUTTON_ONCLICK(){
-  CURRENT_SCALE = this.FIIX;
-  if(this.classList.contains("KEY_BUTTON_SELECTED")){
-    console.log("doubleclick!");
-    if(this.HASVARIANT){
-      console.log("doubleclick HV!");
-      this.ISVARIANT = ! this.ISVARIANT
-      if(this.ISVARIANT){
-        console.log("doubleclick HVS!");
-        this.textContent = this.keyNames[1] + "/" + this.keyNames[0];
-        CURRENT_SCALE_SHARPTYPE = "sharp"
-        
-      } else {
-        console.log("doubleclick HVF!");
-        this.textContent = this.keyNames[0] + "/" + this.keyNames[1];
-        CURRENT_SCALE_SHARPTYPE = "flat"
-      }
-    }
-  } else {
-    for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
-      KEY_SELECT_BUTTONS[i].classList.remove("KEY_BUTTON_SELECTED");
-    }
-    this.classList.add("KEY_BUTTON_SELECTED");
-    if( this.HASVARIANT) {
-      if(this.ISVARIANT){
-        CURRENT_SCALE_SHARPTYPE = "sharp"
-      } else {
-        CURRENT_SCALE_SHARPTYPE = "flat"
-      }
-    } else if(KEYROOT_IIX_FLATS.includes(this.FIIX)) {
-      CURRENT_SCALE_SHARPTYPE = "flat"
-    } else {
-      CURRENT_SCALE_SHARPTYPE = "sharp"
-    }
-  }
-  setupScaleChords();
-}
-for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
-  KEY_SELECT_BUTTONS[i].onclick = KEY_SELECT_BUTTON_ONCLICK
-
-}
-
-
 /////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
@@ -1287,6 +1409,18 @@ for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
 
 
 
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                         NOTE STAFF
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 
 function getNoteInfo(iix){
@@ -1364,6 +1498,18 @@ function addNote( fiix ){
   //}
 }
 
+
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////// 
+//                         Chord panelset controls
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 
 var CHORD_PANELSET_EXPANDALL_BUTTON = document.createElement("button");
@@ -1446,5 +1592,4 @@ document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD
 document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_UP_BUTTON)
 document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_DN_BUTTON)
 document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_EXPANDALL_BUTTON)
-
 
