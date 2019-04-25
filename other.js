@@ -116,6 +116,7 @@ TODO:
  * Add octave menus for instruments
  * add octave controls / expand-reduce controls for piano
  * Make piano work like frets do now
+ * Piano notes labelled like frets
  * Sync piano to frettings of instrument 1
  * Sync notes to frettings of instrument 1
      * if you modify piano what happens to frettings?
@@ -123,28 +124,69 @@ TODO:
      * unselectify?
  * add hover: hovering over piano keys shows that note on frets?
  
+ * mini instrument fretboards! Scalable!
+ 
 Big thing:
  * tooltips! Add tooltips everywhere!
  * tutorial!
 
 */
-var ee = document.getElementById("CONTROL_PANEL")
-var bodyRect = document.body.getBoundingClientRect(),
-    elemRect = ee.getBoundingClientRect(),
-    offset   = elemRect.top - bodyRect.top;
 
-var ee = document.getElementById("CONTROL_PANEL")
-var elemRect = ee.getBoundingClientRect()
+var TUTORIAL_CIRCLED_ELEMENT = false;
+var TUTORIAL_CIRCLE_SHADOW   = false;
 
-var nn = document.createElement("div");
-nn.classList.add("DIV_SHADOW_HOLE")
+window.addEventListener('resize', evt => {
+     if(TUTORIAL_CIRCLED_ELEMENT){
+         var elemRect = TUTORIAL_CIRCLED_ELEMENT.getBoundingClientRect();
+         TUTORIAL_CIRCLE_SHADOW.style["top"]     = (elemRect["top"]-5)+"px";
+         TUTORIAL_CIRCLE_SHADOW.style["left"]    = (1elemRect["left"]-5)+"px";
+         TUTORIAL_CIRCLE_SHADOW.style["width"]   = (5+elemRect["right"] - elemRect["left"])+"px";
+         TUTORIAL_CIRCLE_SHADOW.style["height"]  = (5+elemRect["bottom"] - elemRect["top"])+"px";
+     }
+})
 
-nn.style["position"] = "absolute";
-nn.style["top"]     = (elemRect["top"]-5)+"px";
-nn.style["left"]    = (1elemRect["left"]-5)+"px";
-nn.style["width"]   = (5+elemRect["right"] - elemRect["left"])+"px";
-nn.style["height"]  = (5+elemRect["bottom"] - elemRect["top"])+"px";
-document.body.appendChild(nn)
+function tutorial_circleElement(ee){
+    var elemRect = ee.getBoundingClientRect()
+    var nn = document.createElement("div");
+    nn.classList.add("DIV_SHADOW_HOLE")
+
+    nn.style["position"] = "absolute";
+    nn.style["top"]     = (elemRect["top"]-5)+"px";
+    nn.style["left"]    = (1elemRect["left"]-5)+"px";
+    nn.style["width"]   = (5+elemRect["right"] - elemRect["left"])+"px";
+    nn.style["height"]  = (5+elemRect["bottom"] - elemRect["top"])+"px";
+    if(TUTORIAL_CIRCLE_SHADOW){
+        document.body.removeChild(TUTORIAL_CIRCLE_SHADOW);
+    }
+    document.body.appendChild(nn)
+    TUTORIAL_CIRCLE_SHADOW = nn;
+    TUTORIAL_CIRCLED_ELEMENT = ee;
+}
+function tutorial_endCircleElement(){
+    if(TUTORIAL_CIRCLE_SHADOW){
+        document.body.removeChild(TUTORIAL_CIRCLE_SHADOW);
+    }
+}
 
 
-document.body.removeChild(nn)
+
+function createMiniFret(notes){
+    
+}
+/*
+<div class="MINIFRET_HOLDER">
+<div class="MINIFRET_FRETBOARD">
+<div class="MINIFRET_POSLABEL">2</div>
+<div class="MINIFRET_OPEN"></div>
+<div class="MINIFRET_STRINGLINE S0"></div>
+<div class="MINIFRET_STRINGLINE S1"></div>
+<div class="MINIFRET_STRINGLINE S2"></div>
+<div class="MINIFRET_STRINGLINE S3"></div>
+<div class="MINIFRET_FRET"></div>
+<div class="MINIFRET_FRET"></div>
+<div class="MINIFRET_FRET"></div>
+<div class="MINIFRET_FRET"></div>
+<div class="MINIFRET_NOTE"></div>
+
+</div></div>
+*/

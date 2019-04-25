@@ -1,1 +1,129 @@
 
+.MINIFRET_HOLDER {
+   --scalingFactor:  1;
+   --baseWidth:      15px;
+   --baseHeight:     24px;
+   --stringCt:       4;
+   --fretCt:         5;
+   --fretWd: calc(var(--baseWidth) * (var(--stringCt) + 0.5) * var(--scalingFactor));
+   --noteSize: 10px;
+   --holderPadding: 5px;
+   --holderLeftPad: 10px;
+   height: calc(var(--baseHeight) * var(--fretCt) * var(--scalingFactor) + var(--holderPadding)*2 );
+   width: calc( var(--fretWd) + var(--holderPadding)*2 + var(--holderLeftPad));
+   padding: var(--holderPadding);
+   background-color: var(--LT4);
+   box-sizing: content-box;
+
+}
+
+.MINIFRET_FRETBOARD {
+   height: calc(var(--baseHeight) * var(--fretCt) * var(--scalingFactor));
+   width:  var(--fretWd);
+   position: relative;
+   border-top: 1px solid black;
+   background-color: white;
+   padding: 0px;
+   margin: 0px;
+   box-sizing: content-box;
+   left: var(--holderLeftPad);
+   top: 10px
+}
+.MINIFRET_FRET {
+   height: calc(var(--baseHeight) * var(--scalingFactor));
+   width: var(--fretWd);
+   border-bottom: 2px solid black;
+   box-sizing: border-box;
+   position: relative;
+}
+.MINIFRET_STRINGLINE {
+   --stringNum: 0;
+   position: absolute;
+   top: 0px;
+   left: 0px;
+   width: calc( (var(--baseWidth) * ( var(--stringNum) + 0.75 )) * var(--scalingFactor) );
+   height: calc(var(--baseHeight) * var(--fretCt) * var(--scalingFactor));
+   border-right: 1px solid black;
+   box-sizing: border-box;
+}
+.MINIFRET_STRINGLINE.S0{
+   --stringNum: 0;
+}
+.MINIFRET_STRINGLINE.S1{
+   --stringNum: 1;
+}
+.MINIFRET_STRINGLINE.S2{
+   --stringNum: 2;
+}
+.MINIFRET_STRINGLINE.S3{
+   --stringNum: 3;
+}
+.MINIFRET_STRINGLINE.S4{
+   --stringNum: 4;
+}
+.MINIFRET_STRINGLINE.S5{
+   --stringNum: 5;
+}
+.MINIFRET_STRINGLINE.S6{
+   --stringNum: 6;
+}
+.MINIFRET_NOTE {
+   --NOTEFRET: 0;
+   --NOTESTRING: 0;
+   position: absolute;
+   top:  calc( ( var(--NOTEFRET)   + 0.5 ) * var(--baseHeight) - (var(--noteSize)/2) );
+   left: calc( ( ( var(--NOTESTRING) + 0.75 ) * var(--baseWidth)  - (var(--noteSize)/2)) * var(--scalingFactor) );
+   width: calc(var(--noteSize) * var(--scalingFactor));
+   height: calc(var(--noteSize) * var(--scalingFactor));
+   border: 1px solid black;
+   border-radius: calc(var(--noteSize) * var(--scalingFactor));
+   box-sizing: border-box;
+   background-color: black;
+}
+.MINIFRET_OPEN {
+   --NOTESTRING: 2;
+   position: absolute;
+   top:  calc( 0px - var(--noteSize) * 1.1 * var(--scalingFactor) );
+   left: calc( ( ( var(--NOTESTRING) + 0.75 ) * var(--baseWidth)  - (var(--noteSize)/2)) * var(--scalingFactor) );
+   width: calc(var(--noteSize) * var(--scalingFactor));
+   height: calc(var(--noteSize) * var(--scalingFactor));
+   border: 1px solid black;
+   border-radius: calc(var(--noteSize) * var(--scalingFactor));
+   box-sizing: border-box;
+   background-color: white;
+}
+.MINIFRET_POSLABEL {
+   position: absolute;
+   top:    0px;
+   left:   calc( 0px - var(--noteSize) * var(--scalingFactor) * 2.2);
+   width:  calc(var(--noteSize) * var(--scalingFactor) * 2);
+   height:      calc(var(--baseHeight) * var(--scalingFactor));
+   font-size:   calc( 14px * var(--scalingFactor) );
+   text-align:  right;
+   line-height: calc(var(--baseHeight) * var(--scalingFactor));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
