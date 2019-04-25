@@ -945,3 +945,12 @@ background: repeating-linear-gradient(
 	width: 100%;
 	grid-area: span 1 / span 14;
 }
+
+
+.DIV_SHADOW_HOLE {
+    position: absolute;
+    border: 1px solid red;
+    border-radius: 10px;
+    box-shadow: 0 0 0 99999px rgba(0, 0, 0, .8);
+    z-index: 9999;
+}

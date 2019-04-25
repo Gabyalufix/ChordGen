@@ -110,3 +110,41 @@ Things to store in JSON:
 
 
 
+/*
+
+TODO:
+ * Add octave menus for instruments
+ * add octave controls / expand-reduce controls for piano
+ * Make piano work like frets do now
+ * Sync piano to frettings of instrument 1
+ * Sync notes to frettings of instrument 1
+     * if you modify piano what happens to frettings?
+     * light up matching notes on frets?
+     * unselectify?
+ * add hover: hovering over piano keys shows that note on frets?
+ 
+Big thing:
+ * tooltips! Add tooltips everywhere!
+ * tutorial!
+
+*/
+var ee = document.getElementById("CONTROL_PANEL")
+var bodyRect = document.body.getBoundingClientRect(),
+    elemRect = ee.getBoundingClientRect(),
+    offset   = elemRect.top - bodyRect.top;
+
+var ee = document.getElementById("CONTROL_PANEL")
+var elemRect = ee.getBoundingClientRect()
+
+var nn = document.createElement("div");
+nn.classList.add("DIV_SHADOW_HOLE")
+
+nn.style["position"] = "absolute";
+nn.style["top"]     = (elemRect["top"]-5)+"px";
+nn.style["left"]    = (1elemRect["left"]-5)+"px";
+nn.style["width"]   = (5+elemRect["right"] - elemRect["left"])+"px";
+nn.style["height"]  = (5+elemRect["bottom"] - elemRect["top"])+"px";
+document.body.appendChild(nn)
+
+
+document.body.removeChild(nn)
