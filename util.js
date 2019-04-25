@@ -715,35 +715,28 @@ function assignChordButtonEvents(){
          console.log("?");
          fn.onmousedown = function(event){
             if(event.button == 0){
-                //console.log("BUTTON-0");
-                //console.log(fn.stringBoard.fretNotes)
-                if(fn.classList.contains("fretNoteSelected")){
-                    fn.stringBoard.fretNotes.map( fnn => {
-                            fnn.classList.remove("fretNoteUnselected");
-                            fnn.classList.remove("fretNoteSelected");
-                    })
+                console.log("BUTTON-0");
+                console.log(this.stringBoard.fretNotes)
+                if(this.classList.contains("fretNoteSelected")){
+                    this.stringBoard.selected = false;
+                    this.stringBoard.classList.remove("stringWithSelected")
+                    this.classList.remove("fretNoteSelected");
+                    //todo: make it remove the note!
+                    delNoteToChord(this.noteIIX);
                 } else if(fn.classList.contains("labelledFretNote")){
-                    fn.stringBoard.fretNotes.map( fnn => {
-                        fnn.classList.remove("fretNoteSelected");
-                        if(fnn.classList.contains("labelledFretNote")){
-                            fnn.classList.add("fretNoteUnselected");
-                        }
-                    })
-                    fn.classList.remove("fretNoteUnselected");
-                    fn.classList.add("fretNoteSelected");
+                    if(this.stringBoard.selected){
+                      this.stringBoard.selected.classList.remove("fretNoteSelected");
+                    } else {
+                      this.stringBoard.classList.add("stringWithSelected")
+                    }
+                    this.stringBoard.selected = this;
+                    this.classList.add("fretNoteSelected");
                 } else {
-                    //TODO:
-                    
-                    
-                    fn.stringBoard.fretNotes.map( fnn => {
-                        if(fnn.classList.contains("labelledFretNote")){
-                            fnn.classList.add("fretNoteUnselected");
-                        }
-                    })
-                    fn.classList.remove("fretNoteUnselected");
-                    fn.classList.add("fretNoteSelected");
-                    
-                    
+                    if(this.stringBoard.selected){
+                      this.stringBoard.selected.classList.remove("fretNoteSelected");
+                      this.stringBoard.classList.remove("stringWithSelected")
+                    }
+                    this.stringBoard.selected = false;
                     addNoteToChord(this.noteIIX);
                 }
             } else if(event.button == 2){
