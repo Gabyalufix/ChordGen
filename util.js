@@ -1851,6 +1851,40 @@ function tutorial_endCircleElement(){
 
 function createMiniFret(notes){
     
+    var fh = document.createElement("div");
+    var fb = document.createElement("div");
+    var label = document.createElement("div");
+    
+    fh.classList("MINIFRET_HOLDER");
+    fb.classList("MINIFRET_FRETBOARD");
+    label.classList("MINIFRET_POSLABEL");
+    
+    fh.appendChild(fb);
+    fb.appendChild(label);
+    
+
+    for(var i=0; i < notes.length; i++){
+      var ss = document.createElement("div");
+      ss.classList.add("MINIFRET_STRINGLINE")
+      ss.classList.add("S"+i);
+    }
+    
+    fh.style.setProperty("--stringCt",""+notes.length);
+    //fh.style.setProperty("","");
+    
+    var span = notes.reduce( function(soFar,curr){
+      if(curr == 0){
+        return soFar;
+      } else {
+        return [Math.min(soFar[0],curr),Math.max(soFar[1],curr)];
+      }
+    }, [20,0]);
+    if(span[0] > span[1]){
+      span = [0,0];
+    }
+    var fretCt = Math.max(4,span[1]);    
+    var startFret = Math.max(0, fretCt - 4);
+    
 }
 /*
 <div class="MINIFRET_HOLDER">
