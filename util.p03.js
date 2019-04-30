@@ -1,286 +1,4 @@
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// PROCEDURAL TEXT PARSING
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-NOTE_NAMES_GENERAL = ["C","C#/Db","D","D#/Eb",
-                    "E","F","F#/Gb","G",
-                    "G#/Ab","A","A#/Bb","B"];
-
-NOTE_NAMES_SHARP = ["C","C#","D","D#",
-                    "E","F","F#","G",
-                    "G#","A","A#","B"]
-NOTE_NAMES_FLAT  = ["C","Db","D","Eb",
-                    "E","F","Gb","G",
-                    "Ab","A","Bb","B"]
-
-KEYROOT_NAMES = [
-  "C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"
-]
-KEYROOT_NAMES_WITHALTS = [
-  "C",["Db","C#"],"D","Eb","E","F",["Gb","F#"],"G","Ab","A","Bb",["B","Cb"]
-]
-KEYROOT_NAMES_FLATS = [
-  "F","Db","Eb","Gb","Ab","Bb"
-]
-KEYROOT_IIX_FLATS = [
-  1,3,5,6,8,10
-]
-
- 
-var NOTE_BASENAMES_SHARP = ["C","C","D","D",
-                    "E","F","F","G",
-                    "G","A","A","B"]
-var NOTE_BASENAMES_FLAT  = ["C","D","D","E",
-                    "E","F","G","G",
-                    "A","A","B","B"]
-
-var NOTE_BASEMOD_SHARP = ["","#","","#",
-                    "","","#","",
-                    "#","","#",""]
-var NOTE_BASEMOD_FLAT  = ["","b","","b",
-                    "","","b","",
-                    "b","","b",""]
-
-var NOTE_NUMS = {
-    "C":0,
-    "D":1,
-    "E":2,
-    "F":3,
-    "G":4,
-    "A":5,
-    "B":6
-}
-
-
-CURRENT_SCALE_SHARPTYPE = "sharp";
-
-KEY_TYPE_INTERVALS = {
-  "Major":[2,2,1,2,2,2],
-  "Minor":[2,1,2,2,1,2],
-  "MelodicMinor":[2,1,2,2,2,2,1],
-  "HarmonicMinor":[2,1,2,2,1,3,1],
-  "Dorian":[2,1,2,2,2,1,2],
-  "Phrygian":[1,2,2,2,1,2,2],
-  "Lydian":[2,2,2,1,2,2,1],
-  "Mixolydian":[2,2,1,2,2,1,2],
-  "Aeolian":[2,1,2,2,1,2,2],
-  "HungarianMjr":[3,1,2,1,2,1,2],
-  "Gypsy":[2,1,3,1,1,3,1],
-  "Chromatic":[1,1,1,1,1,1,1,1,1,1,1],
-  "MajorPentatonic":[2,2,3,2,3],
-  "MinorPentatonic":[3,2,2,3,2],
-  "ChinesePentatonic":[4,2,1,4,1]
-}
-KEY_TYPE_TITLES=[
-    ["Major","Major"],
-    ["Minor","Natural Minor"],
-    ["MelodicMinor","Melodic Minor"],
-    ["HarmonicMinor","Harmonic Minor"],
-    ["Dorian","Dorian"],
-    ["Phrygian","Phrygian"],
-    ["Lydian","Lydian"],
-    ["Mixolydian","Mixolydian"],
-    ["Aeolian","Aeolian"],
-    ["HungarianMjr","Hungarian Major"],
-    ["Gypsy","\"Gypsy\""],
-    ["Chromatic","Chromatic"],
-    ["MajorPentatonic","Major Pentatonic"],
-    ["MinorPentatonic","Minor Pentatonic"],
-    ["ChinesePentatonic","Chinese Pentatonic"]
-]
-
-CHORD_TYPE_INTERVALS = {
-  "M":[4,3],
-  "m":[3,4],
-  "7":[4,3,3],
-  "maj7":[4,3,4],
-  "m7":[3,4,3],
-  "dim":[3,3],
-  "aug":[4,4],
-  "6":[4,3,2],
-  "m6":[3,4,2],
-  "6/9":[4,3,2,5],
-  "sus2":[2,5],
-  "sus4":[5,2],
-  "m7b5":[3,3,4],
-  "dim7":[3,3,3],
-  "7b5":[4,2,4],
-  "7#5":[4,4,2],
-  "m(maj7)":[3,4,4],
-  "m7b5":[3,3,4],
-  "dim7":[3,3,3],
-  "9":[4,3,3,4],
-  "9b5":[4,2,4,4],
-  "9#5":[4,4,2,4],
-  "maj9":[4,3,4,3],
-  "m9":[3,4,3,4],
-  "m11":[3,4,3,7],
-  "7sus4":[5,2,3],
-  "7sus2":[2,5,3],
-  "9sus4":[5,2,3,4]
-}
-//CHORD_TYPE_LIST
-CHORD_TYPE_DEF = {
-  "M":["R","3","5"],
-  "m":["R","m3","5"],
-  "6":["R","3","5","6"],
-  "m6":["R","m3","5","6"],
-  "6/9":["R","3","5","6","9"],
-  "maj7":["R","3","5","7"],
-  "7":["R","3","5","m7"],
-  "7b5":["R","3","m5","m7"],
-  "7#5":["R","3","#5","m7"],
-  "m7":["R","m3","5","m7"],
-  "m(maj7)":["R","m3","5","7"],
-  "m7b5":["R","m3","m5","m7"],
-  "dim7":["R","m3","m5","6"],
-  "hdim7":["R","m3","m5","m7"],
-  "9":["R","3","5","m7","9"],
-  "9b5":["R","3","m5","m7","9"],
-  "9#5":["R","3","#5","m7","9"],
-  "maj9":["R","3","5","7","9"],
-  "m9":["R","m3","5","m7","9"],
-  "m11":["R","m3","5","m7","11"],
-  "13":["R","3","5","m7","13"],
-  "maj13":["R","3","5","7","13"],
-  "m13":["R","m3","5","m7","13"],
-  "sus4":["R","4","5"],
-  "sus2":["R","2","5"],
-  "7sus4":["R","4","5","m7"],
-  "7sus2":["R","2","5","m7"],
-  "9sus4":["R","4","5","m7","9"],
-  "9sus2":["R","2","5","m7","9"],
-  "aug":["R","3","m6"],
-  "dim":["R","m3","m5"],
-  "5":["R","5"],
-  "add9":["R","3","5","9"],
-  "add11":["R","3","5","11"],
-  "add13":["R","3","5","13"],
-  "m(add9)":["R","m3","5","9"],
-  "m(add11)":["R","m3","5","11"],
-  "m(add13)":["R","m3","5","13"]
-}
-CHORD_TYPE_LIST = [
-  "M"   ,       
-  "m"   ,       
-  "6"   ,       
-  "m6"  ,       
-  "6/9" ,       
-  "maj7",       
-  "7"   ,       
-  "7b5" ,       
-  "7#5" ,       
-  "m7"  ,       
-  "m(maj7)" ,   
-  "m7b5"    ,   
-  "dim7"    ,
-  "hdim7",
-  "9"       ,   
-  "9b5"     ,   
-  "9#5"     ,   
-  "maj9"    ,   
-  "m9"      ,   
-  "m11"     ,   
-  "13"      ,   
-  "maj13"   ,   
-  "m13"     ,   
-  "sus4"    ,   
-  "sus2"    ,   
-  "7sus4"   ,   
-  "7sus2"   ,   
-  "9sus4"   ,   
-  "9sus2"   ,   
-  "aug"     ,   
-  "dim"     ,   
-  "5"       ,
-  "add9",  "add11","add13",
-  "m(add9)",  "m(add11)","m(add13)"
-]
-
-CHORDNOTE_INTERVALS = {
-  "R":0,
-  "b2":1,  
-  "2":2,
-  "m3":3,
-  "3":4,
-  "4":5,
-  "m5":6,
-  "5":7,
-  "#5":8,
-  "m6":8,
-  "6":9,
-  "m7":10,
-  "7":11,
-  "9":14, //or 2?
-  "11":17, //or 5
-  "13":21 //or 9
-}
-
-CHORDNOTE_INTERVAL_LIST = [
- "R","b2","2","m3","3","4","m5","5","#5","m6","6","m7","7","9","11","13"
-]
-
-REV_CHORDNOTE_INTERVALS = {
-  0:"R",
-  1:"b2",
-  2:"2",
-  3:"m3",
-  4:"3",
-  5:"4",
-  6:"m5",
-  7:"5",
-  8:  "#5",
-  9:  "6",
-  10: "m7",
-  11: "7"
-}
-
-//  "6/9":[2,2,3,2],
-
-
-CHORDSETS = {
- Major:[
-    [ [0,"M"],[1,"m"],[2,"m"],[3,"M"],[4,"M"],[5,"m"],[6,"dim"] ],
-    [ [0,"maj7"],[1,"m7"],[2,"m7"],[3,"maj7"],[4,"7"],[5,"m7"], [6,"hdim7"] ],
-    [ [0,"6"], [1,"m6"],[3,"6"],[4,"6"], [6,"dim7"] ],
-    [ [0,"sus4"],[1,"sus4"],[2,"sus4"],[4,"sus4"],[5,"sus4"]],
-    [ [0,"sus2"],[1,"sus2"],[3,"sus2"],[4,"sus2"],[5,"sus2"]]
- ],
- Minor:[
-    [ [0,"m"],[1,"dim"],[2,"M"],[3,"m"],[4,"m"],[5,"M"],[6,"M"] ],
-    [ [0,"m7"],[1,"m7b5"],[2,"maj7"],[3,"m7"],[4,"m7"],[5,"maj7"],[6,"7"]],
-    [  [2,"m6"],[3,"m6"],[5,"6"],[6,"6"] ],
-    [ [0,"sus4"],[2,"sus4"],[3,"sus4"],[4,"sus4"],[6,"sus4"]],
-    [ [0,"sus2"],[2,"sus2"],[3,"sus2"],[5,"sus2"],[6,"sus2"]]
- ]
- 
-}
-CHORDSET_ROW_LABELS = {
-  Major : ["I","ii","iii","IV","V","vi","vii"]
-}
-
-CHORDSET_OPTIONS = [
-    ["M","m","dim","aug","5","sus4","sus2"],
-    ["7","m7","maj7","m(maj7)","m7b5","7b5","7#5","hdim7"],
-    ["6","m6","dim7"],
-    ["sus4"],
-    ["sus2"],
-    ["7sus4","7sus2"]
-]
-
-
-var STAFF_HOLDER = document.getElementById("STAFF_HOLDER");
-var STAVES = STAFF_HOLDER.getElementsByClassName("STAFF_LINE")
-
-
-
 document.getElementById("SELECT_SCALEKEYTYPE").innerHTML = "";
 for(var i=0; i < KEY_TYPE_TITLES.length; i++){
     //<option value="Major">       Major</option>
@@ -290,63 +8,6 @@ for(var i=0; i < KEY_TYPE_TITLES.length; i++){
        document.getElementById("SELECT_SCALEKEYTYPE").appendChild(scaleKeyOpt)
 }
 
-function instrument(
-   instrumentName,
-   stringIIX,
-   fretSpacing,
-   fretDots,
-   fretDoubleDots
-  ){
-    this.instrumentName = instrumentName;
-    this.stringIIX = stringIIX;
-    this.fretSpacing = fretSpacing;
-    this.fretDots = fretDots;
-    this.fretDoubleDots = fretDoubleDots;
-    
-    this.copyInstrument = function(){
-       return new instrument(this.instrumentName,
-                         this.stringIIX.slice(),
-                         this.fretSpacing.slice(),
-                         this.fretDots.slice(),
-                         this.fretDoubleDots.slice())
-    }
-}
-
-INSTRUMENT_MANDOLIN = new instrument(
-  "Mandolin",
-  [7,2,9,4],
-  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
-  [],
-  []
-)
-INSTRUMENT_UKELELE = new instrument(
-  "Ukelele",
-  [7,0,4,9],
-  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
-  [],
-  []
-)
-INSTRUMENT_GUITAR = new instrument(
-  "Guitar",
-  [4,9,2,7,11,4],
-  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
-  [],
-  []
-)
-
-
-INSTRUMENTS = {
- MANDOLIN:INSTRUMENT_MANDOLIN,
- UKELELE:INSTRUMENT_UKELELE,
- GUITAR:INSTRUMENT_GUITAR
-}
-CURRENT_INSTRUMENT = INSTRUMENTS["UKELELE"];
-FRETBOARD_LENGTH = 800;
-
-
-CURRENT_CHORDROOT_IIX = 0;
-CURRENT_CHORDTYPE     = "M";
-CURRENT_CHORDINTERVALS = CHORD_TYPE_DEF[CURRENT_CHORDTYPE];
 
 function selectChord(){
   var allButtons = document.getElementsByClassName("CHORD_BUTTON");
@@ -468,14 +129,6 @@ function getChordTypeString( ct ){
   }
 }
 
-CHORDSET_OPTIONS = [
-    ["M","m","dim","aug"],
-    ["7","m7","maj7","m(maj7)","m7b5","7b5","7#5","hdim7"],
-    ["6","m6","dim7"],
-    ["sus4"],
-    ["sus2"],
-    ["7sus4","7sus2"]
-]
 
 function isChordInKey(chordRootIIX,chordRelNotes,scaleIIX){
    // var chordRelNotes = CURRENT_CHORDINTERVALS //CHORD_TYPE_DEF[chordType];
@@ -911,28 +564,6 @@ function mouseDownButtonAddNote(event){
             }
 }
 
-var pianoKeys = document.getElementsByClassName("PIANO_KEY");
-for( var nidx = 0; nidx < pianoKeys.length; nidx++){
-    var fiix = nidx % 12;
-    var pk = pianoKeys[nidx];
-    pk.fiix = fiix;
-    pk.onclick = function(){
-               if(this.classList.contains("PIANO_ACTIVEKEY")){
-                   delNoteToChord(this.fiix);
-               } else {
-                   addNoteToChord(this.fiix);
-               }
-    }
-    /*pk.onmousedown = function(event){
-            if(event.button == 0){
-               if(! this.classList.contains("PIANO_ACTIVEKEY")){
-                   addNoteToChord(this.fiix);
-               }
-            } else if(event.button == 2){
-               
-            }
-    }*/
-}
 
 function addNoteToChord(fiix){
     fiix = fiix % 12;
@@ -1265,7 +896,6 @@ function addValuesToSelect(selector,valueList){
 /////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////
 
-var activeInstruments = []
 
 function setInstrument(){
   var inst = INSTRUMENTS[ this.selector.value ].copyInstrument();
@@ -1297,6 +927,8 @@ function setInstrument(){
     fb.style["line-height"] = spacing[j]+"px";
   }
   //CURRENT_INSTRUMENT.stringIIX[sidx]
+  this.style.setProperty("--numStrings",""+inst.stringIIX.length);
+  
   this.stringBoardList = [];
   for(var i = 0; i < inst.stringIIX.length; i++){
     //console.log("adding String: "+inst.stringIIX[i]+" to instrument.");
@@ -1350,15 +982,20 @@ function setInstrument(){
   calculateChords();
 }
 
-function addInstrument( instrumentID , initialInstrument ){
-    console.log("--------------- adding instrument: " +instrumentID);
+
+function addInstrument(  initialInstrument ){
+    console.log("--------------- adding instrument: " +initialInstrument);
+    INSTRUMENT_COUNTER = INSTRUMENT_COUNTER + 1;
     var ipanel = document.createElement("div")
-    ipanel.id = "instrumentPanel_"+instrumentID
+    
+    var iUID = initialInstrument +"_"+INSTRUMENT_COUNTER;
+    ipanel.id = "instrumentPanel_"+iUID
+    ipanel.iUID = iUID;
     ipanel.classList.add("instrumentPanel")
-    var activeInstruments = [ipanel]
+    var activeInstruments = [ipanel];
 
     var iselect = document.createElement("select");
-    iselect.id = "INSTRUMENT_SELECT_"+instrumentID;
+    iselect.id = "INSTRUMENT_SELECT_"+iUID;
     iselect.classList.add("INSTRUMENT_SELECT");
     addValuesToSelect(iselect,INSTRUMENTS_IDLIST);
     iselect.value = initialInstrument;
@@ -1370,14 +1007,32 @@ function addInstrument( instrumentID , initialInstrument ){
     ipanel.selector = iselect;
 
     ipanel.fretBoard = document.createElement("div")
-    ipanel.fretBoard.id = "fretBoard_"+instrumentID;
+    ipanel.fretBoard.id = "fretBoard_"+iUID;
     ipanel.fretBoard.classList.add("fretBoard");
     ipanel.setInstrument = setInstrument
 
+        var instrumentAbbriv = INSTRUMENTS[ initialInstrument ]["abbrivName"];
+        var ititle = document.createElement("input");
+        ititle.setAttribute("type","text");
+        ititle.name="titleBox_"+iUID
+        ititle.value = instrumentAbbriv+"_"+INSTRUMENT_COUNTER
+        ititle.classList.add("InstrumentTitleBox")
+        ipanel.instrumentTitleBox = ititle
+    console.log("-------------");
+    console.log("------------");
+    console.log("-------------");
+    console.log("------------");
+    console.log("-------------");
+    console.log("title: "+instrumentAbbriv+"_"+INSTRUMENT_COUNTER)
+
     ipanel.appendChild(iselect);
+    ipanel.appendChild(ititle);
+    
     ipanel.appendChild(ipanel.fretBoard);
     ipanel.setInstrument();
     activeInstruments.push(ipanel);
+    
+    
     //document.getElementById("maindivInner_CHORDPANEL").appendChild( ipanel )
     document.getElementById("maindiv").appendChild( ipanel )
     
@@ -1453,103 +1108,11 @@ function KEY_SELECT_BUTTON_ONCLICK(){
 }
 for(var i=0; i < KEY_SELECT_BUTTONS.length; i++){
   KEY_SELECT_BUTTONS[i].onclick = KEY_SELECT_BUTTON_ONCLICK
-
 }
 
 
 
 
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////// 
-//                         INITIALIZATION
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
-
-console.log("Creating panels, etc...")
-
-INSTRUMENTS_IDLIST = [
- ["MANDOLIN","Mandolin"],
- ["UKELELE","Ukelele"],
- ["GUITAR","Guitar"]
-]
-
-console.log("Setting scale chords...")
-
-setupScaleChords()
-
-console.log("Setting instrument...")
-
-addInstrument("0","UKELELE");
-
-//var iselect0 = document.createElement("select");
-//iselect0.id = "INSTRUMENT_SELECT_0";
-//iselect0.classList.add("INSTRUMENT_SELECT");
-//addValuesToSelect(iselect0,INSTRUMENTS_IDLIST);
-//ipanel0.selector = iselect0;
-//
-///ipanel0.fretBoard = document.createElement("div")
-//ipanel0.fretBoard.id = "fretBoard_0";
-//ipanel0.fretBoard.classList.add("fretBoard");
-//ipanel0.setInstrument = setInstrument
-//
-//ipanel0.appendChild(iselect0);
-//ipanel0.appendChild(ipanel0.fretBoard);
-//
-//ipanel0.setInstrument();
-
-
-console.log("Instrument set!")
-
-document.getElementById("SELECT_SCALEKEY").onchange = calculateChords
-document.getElementById("SELECT_ROOT").onchange = calculateChords
-document.getElementById("SELECT_CHORDTYPE").onchange = calculateChords
-document.getElementById("SELECT_SCALEKEY").onchange = calculateChords
-document.getElementById("SELECT_SCALEKEYTYPE").onchange = calculateChords
-document.getElementById("SELECT_CHORDDEGREE").onchange = calculateChords
-
-//document.getElementById("INSTRUMENT_SELECT").onchange = calculateChords
-
-//Array.prototype.map.call(document.getElementsByClassName("INSTRUMENT_SELECT"),
-//                          x => x.onchange = calculateChords );
-
-document.getElementById("SELECT_SCALEKEY").onchange = setupScaleChords
-document.getElementById("SELECT_SCALEKEYTYPE").onchange = setupScaleChords
-
-//KEY_TYPE_INTERVALS KEY_TYPE_TITLES
-
-console.log("Setting common chords:")
-
-document.getElementsByClassName("CHORD_BUTTON")[0].onclick();
-console.log("Setting other chords:")
-
-setupOtherChords();
-
-document.getElementById("ADD_INSTRUMENT_BUTTON").selector = document.getElementById("INSTRUMENT_SELECT_ADD")
-document.getElementById("ADD_INSTRUMENT_BUTTON").onclick = function(){
-  addInstrument( activeInstruments.length+"" , this.selector.value )
-}
-
-document.getElementById("ShowPiano").onchange = function(){
-  if(this.checked){
-    document.getElementById("PIANO_KEYBOARD_SUPER").style.display = "block";
-  } else {
-    document.getElementById("PIANO_KEYBOARD_SUPER").style.display = "none";
-  }
-}
-document.getElementById("ShowStaff").onchange = function(){
-  if(this.checked){
-    document.getElementById("STAFF_HOLDER").style.display = "block";
-  } else {
-    document.getElementById("STAFF_HOLDER").style.display = "none";
-  }
-}
 assignChordButtonEvents()
 /*
 KEYROOT_NAMES_WITHALTS = [
@@ -1811,8 +1374,6 @@ Big thing:
 */
 
 
-var TUTORIAL_CIRCLED_ELEMENT = false;
-var TUTORIAL_CIRCLE_SHADOW   = false;
 
 window.addEventListener('resize', evt => {
      if(TUTORIAL_CIRCLED_ELEMENT){
@@ -1903,97 +1464,3 @@ function createMiniFret(notes){
 
 </div></div>
 */
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////// 
-//                         Chord panelset controls
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
-
-
-var CHORD_PANELSET_EXPANDALL_BUTTON = document.createElement("button");
-CHORD_PANELSET_EXPANDALL_BUTTON.textContent = "SHOW ALL";
-//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
-
-var CHORD_PANELSET_EXPAND_BUTTON = document.createElement("button");
-CHORD_PANELSET_EXPAND_BUTTON.textContent = "++";
-//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
-
-var CHORD_PANELSET_REDUCE_BUTTON = document.createElement("button");
-CHORD_PANELSET_REDUCE_BUTTON.textContent = "--";
-//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
-
-var CHORD_PANELSET_UP_BUTTON = document.createElement("button");
-CHORD_PANELSET_UP_BUTTON.textContent = "^";
-//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
-
-var CHORD_PANELSET_DN_BUTTON = document.createElement("button");
-CHORD_PANELSET_DN_BUTTON.textContent = "v";
-//CHORD_PANELSET_EXPAND_BUTTON.classList.add("");
-
-var CHORD_PANELSET_CURRVIS_CT  = 20;
-var CHORD_PANELSET_CURRVIS_IDX = 0;
-var CHORD_PANELSET_PANELS = document.getElementById("CHORD_PANELSET").children
-
-function chordPanelSet_setVisiblePanels(){
-  for(var i=0; i < CHORD_PANELSET_PANELS.length; i++){
-    console.log("panel: "+CHORD_PANELSET_PANELS[i]);
-    if(i < CHORD_PANELSET_CURRVIS_IDX || i >= CHORD_PANELSET_CURRVIS_IDX + CHORD_PANELSET_CURRVIS_CT){
-        CHORD_PANELSET_PANELS[i].style.display = "none";
-    } else {
-        CHORD_PANELSET_PANELS[i].style.display = "grid";
-    }
-  }
-}
-chordPanelSet_setVisiblePanels();
-
-CHORD_PANELSET_EXPAND_BUTTON.onclick = function(){
-    CHORD_PANELSET_CURRVIS_CT = CHORD_PANELSET_CURRVIS_CT + 1;
-    if(CHORD_PANELSET_CURRVIS_IDX + CHORD_PANELSET_CURRVIS_CT >= CHORD_PANELSET_PANELS.length){
-        this.disabled =true;
-    }
-    CHORD_PANELSET_REDUCE_BUTTON.disabled = false;
-    chordPanelSet_setVisiblePanels();
-}
-CHORD_PANELSET_REDUCE_BUTTON.onclick = function(){
-    CHORD_PANELSET_CURRVIS_CT = CHORD_PANELSET_CURRVIS_CT -1;
-    if(CHORD_PANELSET_CURRVIS_CT == 0){
-        this.disabled = true;
-    }
-    CHORD_PANELSET_EXPAND_BUTTON.disabled = false;   
-    chordPanelSet_setVisiblePanels();
-}
-CHORD_PANELSET_UP_BUTTON.onclick = function(){
-    CHORD_PANELSET_CURRVIS_IDX = CHORD_PANELSET_CURRVIS_IDX - 1;
-    if(CHORD_PANELSET_CURRVIS_IDX == 0){
-        this.disabled =true;
-    }
-    CHORD_PANELSET_DN_BUTTON.disabled = false;
-    chordPanelSet_setVisiblePanels();
-}
-CHORD_PANELSET_DN_BUTTON.onclick = function(){
-    CHORD_PANELSET_CURRVIS_IDX = CHORD_PANELSET_CURRVIS_IDX + 1;
-    if(CHORD_PANELSET_CURRVIS_IDX + CHORD_PANELSET_CURRVIS_CT >= CHORD_PANELSET_PANELS.length){
-        this.disabled =true;
-    }
-    CHORD_PANELSET_UP_BUTTON.disabled = false;
-    chordPanelSet_setVisiblePanels();
-}
-CHORD_PANELSET_EXPANDALL_BUTTON.onclick = function(){
-   CHORD_PANELSET_CURRVIS_IDX = 0;
-   CHORD_PANELSET_CURRVIS_CT  = CHORD_PANELSET_PANELS.length;
-    chordPanelSet_setVisiblePanels();
-
-}
-
-document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_EXPAND_BUTTON)
-document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_REDUCE_BUTTON)
-document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_UP_BUTTON)
-document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_DN_BUTTON)
-document.getElementById("CHORD_PANELSET").insertAdjacentElement("afterend",CHORD_PANELSET_EXPANDALL_BUTTON)
-
