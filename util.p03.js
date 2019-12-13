@@ -115,7 +115,13 @@ function getNoteSelector(){
 
 function tuneStringToNote(sb, iix){
   for(var i=0; i < sb.fretNotes.length; i++){
-    sb.fretNotes[i] = getNoteName( iix + i );
+    sb.fretNotes[i].childNodes[0].textContent = getNoteName( iix + i );
+    
+      //sb.fretNotes.push(fn);
+      //console.log(noteLabel)
+      //console.log(fn)
+      //fn.noteIIX = inst.stringIIX[i] + j;
+      //fn.textContent = getNoteName( inst.stringIIX[i] + j );
   }
 }
 
