@@ -282,28 +282,40 @@ INSTRUMENT_MANDOLIN = new instrument(
   [7,2,9,4],
   [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
   [],
-  [],"Mando"
+  [],"Mando",[]
 )
 INSTRUMENT_UKELELE = new instrument(
   "Ukelele",
   [7,0,4,9],
   [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
   [],
-  [],"Uke"
+  [],"Uke",[]
 )
 INSTRUMENT_GUITAR = new instrument(
   "Guitar",
   [4,9,2,7,11,4],
   [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
   [],
-  [],"Guitar"
+  [],"Guitar",[]
 )
 
+//NOTE_NAMES_GENERAL = ["C","C#/Db","D","D#/Eb",
+//                    "E","F","F#/Gb","G",
+//                    "G#/Ab","A","A#/Bb","B"];
+
+INSTRUMENT_BANJO = new instrument(
+  "Banjo",
+  [7,2,7,11,2],
+  [  20,  56.126,  52.976,  50.002,  47.196,  44.547,  42.047,  39.687,  37.459,  35.357,  33.373,  31.499,  29.732,  28.063,  26.488,  25.001,  23.598,22.273],
+  [],
+  [],"Banjo",[[0,4]]
+)
 
 INSTRUMENTS = {
  MANDOLIN:INSTRUMENT_MANDOLIN,
  UKELELE:INSTRUMENT_UKELELE,
- GUITAR:INSTRUMENT_GUITAR
+ GUITAR:INSTRUMENT_GUITAR,
+ BANJO:INSTRUMENT_BANJO
 }
 CURRENT_INSTRUMENT = INSTRUMENTS["UKELELE"];
 FRETBOARD_LENGTH = 800;

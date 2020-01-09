@@ -943,6 +943,13 @@ function setInstrument(){
     var stringNoteSelector = getNoteSelector();
     sbh.appendChild(stringNoteSelector);
     stringNoteSelector.value = ""+inst.stringIIX[i];
+    
+    var blackoutFrets = 0;
+    for(var kk=0;kk < inst.blackoutFrets.length;kk++){
+      if(i == inst.blackoutFrets[kk][0]){
+        blackoutFrets = inst.blackoutFrets[kk][1]
+      }
+    }
 
     var sb = document.createElement("div");
     sb.sbh = sbh;
@@ -964,7 +971,29 @@ function setInstrument(){
     var ss = document.createElement("div");
     ss.classList.add("stringLine");
     sb.appendChild(ss);
-    for(var j=0; j < spacing.length; j++){
+    for(var j=0; j < blackoutFrets; j++){
+      //console.log(" j = "+j);
+      var fb = document.createElement("div");
+      //var fn = document.createElement("button");
+      //var noteLabel = document.createElement("div");
+      fb.classList.add("fretBlackout");
+      //fn.classList.add("fretNote");
+      //noteLabel.classList.add("chordNoteLabel");
+      //fn.stringBoard = sb;
+      
+      fb.style.height = spacing[j]+"px";
+      sb.appendChild(fb);
+      //fb.appendChild(fn);
+      //sb.fretNotes.push(fn);
+      //console.log(noteLabel)
+      //console.log(fn)
+      //fn.noteIIX = inst.stringIIX[i] + j;
+      //fn.textContent = getNoteName( inst.stringIIX[i] + j );
+      //fn.appendChild(noteLabel);
+    }
+
+    
+    for(var j=blackoutFrets; j < spacing.length; j++){
       //console.log(" j = "+j);
       var fb = document.createElement("div");
       var fn = document.createElement("button");
@@ -980,12 +1009,13 @@ function setInstrument(){
       sb.fretNotes.push(fn);
       //console.log(noteLabel)
       //console.log(fn)
-      fn.noteIIX = inst.stringIIX[i] + j;
-      fn.textContent = getNoteName( inst.stringIIX[i] + j );
+      fn.noteIIX = inst.stringIIX[i] + j - blackoutFrets;
+      fn.textContent = getNoteName( inst.stringIIX[i] + j  - blackoutFrets);
       fn.appendChild(noteLabel);
     }
   }
   calculateChords();
+  assignChordButtonEvents();
 }
 
 

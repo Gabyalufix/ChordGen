@@ -43,7 +43,8 @@ console.log("Creating panels, etc...")
 INSTRUMENTS_IDLIST = [
  ["MANDOLIN","Mandolin"],
  ["UKELELE","Ukelele"],
- ["GUITAR","Guitar"]
+ ["GUITAR","Guitar"],
+ ["BANJO","Banjo"]
 ]
 
 console.log("Setting scale chords...")

@@ -6,7 +6,8 @@ function instrument(
    fretSpacing,
    fretDots,
    fretDoubleDots,
-   abbrivName
+   abbrivName,
+   blackoutFrets
   ){
     this.instrumentName = instrumentName;
     this.stringIIX = stringIIX;
@@ -14,6 +15,7 @@ function instrument(
     this.fretDots = fretDots;
     this.fretDoubleDots = fretDoubleDots;
     this.abbrivName = abbrivName;
+    this.blackoutFrets = blackoutFrets;
     
     this.copyInstrument = function(){
        return new instrument(this.instrumentName,
@@ -21,7 +23,8 @@ function instrument(
                          this.fretSpacing.slice(),
                          this.fretDots.slice(),
                          this.fretDoubleDots.slice(),
-                         this.abbrivName)
+                         this.abbrivName,
+                         this.blackoutFrets)
     }
 }
 

@@ -205,6 +205,19 @@ h5 {
   border-bottom-color: var(--DK2);
   border-bottom-width: 5px;
 }
+.fretBlackout {
+  width: var(--stringWidth);
+  height: 50px;
+  background-color: var(--DK4);
+  margin: 0px;
+  padding: 0px;
+  grid-area: span 1 / span 1;
+  position: relative;
+  text-align: center;
+  border-bottom-style: solid;
+  border-bottom-color: var(--DK4);
+  border-bottom-width: 5px;
+}
 
 .stringLabel {
   display: grid;
