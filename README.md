@@ -1,8 +1,8 @@
 # ChordGen
 
-ChordGen by Steve Hartley.
+StevesChordTool by Steve Hartley.
 
-I realized after the fact that lots of people have made apps called chordgen. I should probably change the name.
+I realized after the fact that lots of people have made apps called chordgen, so I renamed it [StevesChordTool](https://github.com/Gabyalufix/StevesChordTool).
 
-Anyway: [click here to get to my chordgen app](https://gabyalufix.github.io/ChordGen/index.html)
+Anyway: [click here to get to the app](https://gabyalufix.github.io/StevesChordTool/index.html)
 
